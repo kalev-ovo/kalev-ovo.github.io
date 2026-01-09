@@ -12,7 +12,39 @@
         <pubDate>Fri, 09 Jan 2026 00:00:00 +0000</pubDate>
         
         <guid>https://kalev-ovo.github.io/page/about/</guid>
-        <description></description>
+        <description>
+
+
+
+&lt;div class=&#34;&#34; style=&#34;text-align: center; width: 100%; max-width: 100%;&#34;&gt;
+  &lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;name&#34; font-size=&#34;90&#34; viewBox=&#34;0 0 1000 200&#34; preserveAspectRatio=&#34;xMidYMid meet&#34;&gt;
+    
+    
+    
+
+    &lt;text text-anchor=&#34;middle&#34; x=&#34;50%&#34; y=&#34;66%&#34; text-transform=&#34;uppercase&#34; fill=&#34;none&#34; stroke=&#34;#5d3d21&#34; stroke-width=&#34;1px&#34; stroke-dasharray=&#34;90 310&#34;&gt;
+      K a l e v
+      &lt;animate attributeName=&#34;stroke-dashoffset&#34; begin=&#34;-1.5s&#34; dur=&#34;6s&#34; from=&#34;0&#34; to=&#34;-400&#34; repeatCount=&#34;indefinite&#34;&gt;&lt;/animate&gt;
+    &lt;/text&gt;
+
+    &lt;text text-anchor=&#34;middle&#34; x=&#34;50%&#34; y=&#34;66%&#34; text-transform=&#34;uppercase&#34; fill=&#34;none&#34; stroke=&#34;#212c27&#34; stroke-width=&#34;1px&#34; stroke-dasharray=&#34;90 310&#34;&gt;
+      K a l e v
+      &lt;animate attributeName=&#34;stroke-dashoffset&#34; begin=&#34;-3s&#34; dur=&#34;6s&#34; from=&#34;0&#34; to=&#34;-400&#34; repeatCount=&#34;indefinite&#34;&gt;&lt;/animate&gt;
+    &lt;/text&gt;
+
+    &lt;text text-anchor=&#34;middle&#34; x=&#34;50%&#34; y=&#34;66%&#34; text-transform=&#34;uppercase&#34; fill=&#34;none&#34; stroke=&#34;#ebb10d&#34; stroke-width=&#34;1px&#34; stroke-dasharray=&#34;90 310&#34;&gt;
+      K a l e v
+      &lt;animate attributeName=&#34;stroke-dashoffset&#34; begin=&#34;-4.5s&#34; dur=&#34;6s&#34; from=&#34;0&#34; to=&#34;-400&#34; repeatCount=&#34;indefinite&#34;&gt;&lt;/animate&gt;
+    &lt;/text&gt;
+
+    &lt;text text-anchor=&#34;middle&#34; x=&#34;50%&#34; y=&#34;66%&#34; text-transform=&#34;uppercase&#34; fill=&#34;none&#34; stroke=&#34;#9b59b6&#34; stroke-width=&#34;1px&#34; stroke-dasharray=&#34;90 310&#34;&gt;
+      K a l e v
+      &lt;animate attributeName=&#34;stroke-dashoffset&#34; begin=&#34;-6s&#34; dur=&#34;6s&#34; from=&#34;0&#34; to=&#34;-400&#34; repeatCount=&#34;indefinite&#34;&gt;&lt;/animate&gt;
+    &lt;/text&gt;
+  &lt;/svg&gt;
+&lt;/div&gt;
+
+</description>
         </item>
         <item>
         <title>Archives</title>

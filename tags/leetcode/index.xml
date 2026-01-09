@@ -12,12 +12,12 @@
         <pubDate>Fri, 09 Jan 2026 00:45:50 +0800</pubDate>
         
         <guid>https://kalev-ovo.github.io/posts/lc865/</guid>
-        <description>&lt;h2 id=&#34;题目描述&#34;&gt;题目描述
+        <description>&lt;h2 id=&#34;题目描述&#34;&gt;&lt;a href=&#34;#%e9%a2%98%e7%9b%ae%e6%8f%8f%e8%bf%b0&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;题目描述
 &lt;/h2&gt;&lt;p&gt;给定一个根为 root 的二叉树，每个节点的深度是 &lt;strong&gt;该节点到根的最短距离&lt;/strong&gt; 。&lt;/p&gt;
 &lt;p&gt;返回包含原始树中所有&lt;strong&gt;最深节点&lt;/strong&gt;的 &lt;strong&gt;最小子树&lt;/strong&gt; 。&lt;/p&gt;
 &lt;p&gt;如果一个节点在 &lt;strong&gt;整个树&lt;/strong&gt; 的任意节点之间具有最大的深度，则该节点是 &lt;strong&gt;最深的&lt;/strong&gt; 。&lt;/p&gt;
 &lt;p&gt;一个节点的 &lt;strong&gt;子树&lt;/strong&gt; 是该节点加上它的所有后代的集合。&lt;/p&gt;
-&lt;h3 id=&#34;示例-1&#34;&gt;示例 1：
+&lt;h3 id=&#34;示例-1&#34;&gt;&lt;a href=&#34;#%e7%a4%ba%e4%be%8b-1&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;示例 1：
 &lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;https://s3-lc-upload.s3.amazonaws.com/uploads/2018/07/01/sketch1.png&#34;
 	
 	
@@ -34,14 +34,14 @@
 在图中用蓝色标记的是树的最深的节点。
 注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;思路&#34;&gt;思路
+&lt;h2 id=&#34;思路&#34;&gt;&lt;a href=&#34;#%e6%80%9d%e8%b7%af&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;思路
 &lt;/h2&gt;&lt;p&gt;考虑到最深的节点可能有多个&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;首先考虑找到最深的叶子节点，可以用&lt;strong&gt;层序遍历&lt;/strong&gt;找到所有最深的叶子节点&lt;/li&gt;
 &lt;li&gt;然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点&lt;/li&gt;
 &lt;li&gt;最后返回这个公共祖先作为结果&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id=&#34;代码实现&#34;&gt;代码实现
+&lt;h3 id=&#34;代码实现&#34;&gt;&lt;a href=&#34;#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;代码实现
 &lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;/**
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt; * Definition for a binary tree node.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt; * struct TreeNode {
@@ -96,21 +96,21 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; root;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;复杂度分析&#34;&gt;复杂度分析
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;复杂度分析&#34;&gt;&lt;a href=&#34;#%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e6%9e%90&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;复杂度分析
 &lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。
 需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。&lt;/li&gt;
 &lt;li&gt;空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。
 需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;优化&#34;&gt;优化
+&lt;h2 id=&#34;优化&#34;&gt;&lt;a href=&#34;#%e4%bc%98%e5%8c%96&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;优化
 &lt;/h2&gt;&lt;p&gt;这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;最深子树的根节点意味着其左右子树的深度相同&lt;/li&gt;
 &lt;li&gt;答案一定在左子树或右子树中&lt;/li&gt;
 &lt;li&gt;可以用&lt;strong&gt;DFS&lt;/strong&gt;来解决&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id=&#34;代码实现-1&#34;&gt;代码实现
+&lt;h3 id=&#34;代码实现-1&#34;&gt;&lt;a href=&#34;#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0-1&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;代码实现
 &lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;/**
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt; * Definition for a binary tree node.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt; * struct TreeNode {
@@ -137,7 +137,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; dfs(root).first;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;leetcode-个人主页&#34;&gt;LeetCode 个人主页
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;leetcode-个人主页&#34;&gt;&lt;a href=&#34;#leetcode-%e4%b8%aa%e4%ba%ba%e4%b8%bb%e9%a1%b5&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;LeetCode 个人主页
 &lt;/h3&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://leetcode.cn/u/kalev/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;https://leetcode.cn/u/kalev/&lt;/a&gt;&lt;/p&gt;
 </description>

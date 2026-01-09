@@ -13,10 +13,10 @@
         
         <guid>https://kalev-ovo.github.io/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5spaceship-titanic%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0/</guid>
         <description>&lt;p&gt;在这篇博客中，我将分享在Kaggle的Spaceship Titanic竞赛中构建预测模型的完整流程，重点介绍如何通过余弦退火学习率调度器提升模型性能。&lt;/p&gt;
-&lt;h2 id=&#34;竞赛概述&#34;&gt;竞赛概述
+&lt;h2 id=&#34;竞赛概述&#34;&gt;&lt;a href=&#34;#%e7%ab%9e%e8%b5%9b%e6%a6%82%e8%bf%b0&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;竞赛概述
 &lt;/h2&gt;&lt;p&gt;Spaceship Titanic是Kaggle上的一个经典二分类问题，目标是预测乘客是否在宇宙飞船事故中被运输到另一个维度。这是一个典型的结构化数据分类问题，适合初学者入门机器学习。&lt;/p&gt;
-&lt;h2 id=&#34;模型架构与优化策略&#34;&gt;模型架构与优化策略
-&lt;/h2&gt;&lt;h3 id=&#34;核心模型结构&#34;&gt;核心模型结构
+&lt;h2 id=&#34;模型架构与优化策略&#34;&gt;&lt;a href=&#34;#%e6%a8%a1%e5%9e%8b%e6%9e%b6%e6%9e%84%e4%b8%8e%e4%bc%98%e5%8c%96%e7%ad%96%e7%95%a5&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;模型架构与优化策略
+&lt;/h2&gt;&lt;h3 id=&#34;核心模型结构&#34;&gt;&lt;a href=&#34;#%e6%a0%b8%e5%bf%83%e6%a8%a1%e5%9e%8b%e7%bb%93%e6%9e%84&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;核心模型结构
 &lt;/h3&gt;&lt;p&gt;我构建了一个简单的全连接神经网络作为基础模型：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;SpaceshipNN&lt;/span&gt;(nn&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Module):
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;__init__&lt;/span&gt;(self, input_size):
@@ -37,10 +37,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;relu(self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fc3(x))
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sigmoid(self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fc4(x))
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;关键优化余弦退火学习率调度&#34;&gt;关键优化：余弦退火学习率调度
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;关键优化余弦退火学习率调度&#34;&gt;&lt;a href=&#34;#%e5%85%b3%e9%94%ae%e4%bc%98%e5%8c%96%e4%bd%99%e5%bc%a6%e9%80%80%e7%81%ab%e5%ad%a6%e4%b9%a0%e7%8e%87%e8%b0%83%e5%ba%a6&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;关键优化：余弦退火学习率调度
 &lt;/h3&gt;&lt;p&gt;为什么选择余弦退火？
 传统的学习率调度器如ReduceLROnPlateau在验证损失停止改善时降低学习率，但这种方法可能导致训练过早收敛。余弦退火则提供了一种更平滑、周期性的学习率调整方式：&lt;/p&gt;
-&lt;h3 id=&#34;替换传统的reducelronplateau为cosineannealinglr&#34;&gt;替换传统的ReduceLROnPlateau为CosineAnnealingLR
+&lt;h3 id=&#34;替换传统的reducelronplateau为cosineannealinglr&#34;&gt;&lt;a href=&#34;#%e6%9b%bf%e6%8d%a2%e4%bc%a0%e7%bb%9f%e7%9a%84reducelronplateau%e4%b8%bacosineannealinglr&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;替换传统的ReduceLROnPlateau为CosineAnnealingLR
 &lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; torch.optim.lr_scheduler &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; CosineAnnealingLR
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 初始化优化器&lt;/span&gt;
@@ -48,11 +48,11 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 初始化余弦退火学习率调度器&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;scheduler &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; CosineAnnealingLR(optimizer, T_max&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;, eta_min&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1e-6&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;实现细节&#34;&gt;实现细节：
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;实现细节&#34;&gt;&lt;a href=&#34;#%e5%ae%9e%e7%8e%b0%e7%bb%86%e8%8a%82&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;实现细节：
 &lt;/h3&gt;&lt;p&gt;• T_max=50：半个周期的epoch数&lt;/p&gt;
 &lt;p&gt;• eta_min=1e-6：最小学习率&lt;/p&gt;
 &lt;p&gt;• 每个epoch后调用scheduler.step()更新学习率&lt;/p&gt;
-&lt;h3 id=&#34;训练流程优化&#34;&gt;训练流程优化
+&lt;h3 id=&#34;训练流程优化&#34;&gt;&lt;a href=&#34;#%e8%ae%ad%e7%bb%83%e6%b5%81%e7%a8%8b%e4%bc%98%e5%8c%96&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;训练流程优化
 &lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;train_with_cosine_annealing&lt;/span&gt;(model, train_loader, val_loader, epochs&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;):
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; epoch &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(epochs):
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;# 训练阶段&lt;/span&gt;
@@ -73,7 +73,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; epoch &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            print(&lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Epoch &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;epoch&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; | Train Loss: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;train_loss&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;.4f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; | &amp;#39;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                  &lt;span style=&#34;color:#e6db74&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Val Loss: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;val_loss&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;.4f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; | LR: &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{&lt;/span&gt;current_lr&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;.6f&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;实验结果&#34;&gt;实验结果
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;实验结果&#34;&gt;&lt;a href=&#34;#%e5%ae%9e%e9%aa%8c%e7%bb%93%e6%9e%9c&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;实验结果
 &lt;/h2&gt;&lt;p&gt;通过引入余弦退火学习率调度，模型表现有了显著提升：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
@@ -86,7 +86,7 @@
 &lt;p&gt;训练稳定性：明显改善，避免了学习率过早衰减的问题&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id=&#34;技术要点总结&#34;&gt;技术要点总结
+&lt;h3 id=&#34;技术要点总结&#34;&gt;&lt;a href=&#34;#%e6%8a%80%e6%9c%af%e8%a6%81%e7%82%b9%e6%80%bb%e7%bb%93&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;技术要点总结
 &lt;/h3&gt;&lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;学习率调度的重要性：合适的学习率调度策略可以显著影响模型收敛和最终性能。&lt;/p&gt;
@@ -120,14 +120,14 @@
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;h3 id=&#34;进一步优化方向&#34;&gt;进一步优化方向
+&lt;h3 id=&#34;进一步优化方向&#34;&gt;&lt;a href=&#34;#%e8%bf%9b%e4%b8%80%e6%ad%a5%e4%bc%98%e5%8c%96%e6%96%b9%e5%90%91&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;进一步优化方向
 &lt;/h3&gt;&lt;p&gt;虽然余弦退火带来了明显改进，但仍有进一步优化的空间：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;带热身的余弦退火：使用CosineAnnealingWarmRestarts实现更复杂的调度策略&lt;/li&gt;
 &lt;li&gt;模型架构优化：尝试更深的网络或注意力机制&lt;/li&gt;
 &lt;li&gt;特征工程：深入挖掘数据特征的相关性&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h3 id=&#34;结语&#34;&gt;结语
+&lt;h3 id=&#34;结语&#34;&gt;&lt;a href=&#34;#%e7%bb%93%e8%af%ad&#34; class=&#34;header-anchor&#34;&gt;&lt;/a&gt;结语
 &lt;/h3&gt;&lt;p&gt;通过这个项目，我深刻体会到学习率调度在深度学习中的重要性。余弦退火作为一种简单而有效的技术，值得在各类分类任务中尝试和应用。机器学习不仅是模型架构的竞赛，更是对训练细节的精心打磨。&lt;/p&gt;
 &lt;p&gt;完整代码和详细实现请参考我的Kaggle笔记本：https://www.kaggle.com/code/kalevyang/notebooke4132da306&lt;/p&gt;
 </description>
