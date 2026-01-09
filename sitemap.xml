@@ -2,19 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://kalev-ovo.github.io/tags/dfs/</loc>
-    <lastmod>2026-01-09T00:45:50+08:00</lastmod>
+    <loc>https://kalev-ovo.github.io/posts/code-blocks-beautify/</loc>
+    <lastmod>2026-01-09T21:43:29+08:00</lastmod>
   </url><url>
     <loc>https://kalev-ovo.github.io/</loc>
+    <lastmod>2026-01-09T21:43:29+08:00</lastmod>
+  </url><url>
+    <loc>https://kalev-ovo.github.io/posts/</loc>
+    <lastmod>2026-01-09T21:43:29+08:00</lastmod>
+  </url><url>
+    <loc>https://kalev-ovo.github.io/page/about/</loc>
+    <lastmod>2026-01-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kalev-ovo.github.io/page/archives/</loc>
+    <lastmod>2026-01-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kalev-ovo.github.io/page/</loc>
+    <lastmod>2026-01-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kalev-ovo.github.io/tags/dfs/</loc>
     <lastmod>2026-01-09T00:45:50+08:00</lastmod>
   </url><url>
     <loc>https://kalev-ovo.github.io/tags/leetcode/</loc>
     <lastmod>2026-01-09T00:45:50+08:00</lastmod>
   </url><url>
     <loc>https://kalev-ovo.github.io/posts/lc865/</loc>
-    <lastmod>2026-01-09T00:45:50+08:00</lastmod>
-  </url><url>
-    <loc>https://kalev-ovo.github.io/posts/</loc>
     <lastmod>2026-01-09T00:45:50+08:00</lastmod>
   </url><url>
     <loc>https://kalev-ovo.github.io/tags/</loc>
@@ -45,5 +57,7 @@
     <lastmod>2025-10-28T16:25:41+00:00</lastmod>
   </url><url>
     <loc>https://kalev-ovo.github.io/categories/</loc>
+  </url><url>
+    <loc>https://kalev-ovo.github.io/page/search/</loc>
   </url>
 </urlset>

@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="zh-CN" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="题目描述\r给定一个根为 root 的二叉树，每个节点的深度是 该节点到根的最短距离 。\n返回包含原始树中所有最深节点的 最小子树 。\n如果一个节点在 整个树 的任意节点之间具有最大的深度，则该节点是 最深的 。\n一个节点的 子树 是该节点加上它的所有后代的集合。\n示例 1：\r输入：root = [3,5,1,6,2,0,8,null,null,7,4] 输出：[2,7,4] 解释： 我们返回值为 2 的节点，在图中用黄色标记。 在图中用蓝色标记的是树的最深的节点。 注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。\n思路\r考虑到最深的节点可能有多个\n首先考虑找到最深的叶子节点，可以用层序遍历找到所有最深的叶子节点 然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点 最后返回这个公共祖先作为结果 代码实现\r/** * Definition for a binary tree node. * struct TreeNode { * int val; * TreeNode *left; * TreeNode *right; * TreeNode() : val(0), left(nullptr), right(nullptr) {} * TreeNode(int x) : val(x), left(nullptr), right(nullptr) {} * TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {} * }; */ class Solution { public: TreeNode* subtreeWithAllDeepest(TreeNode* root) { vector&lt;int&gt; fa(501, -1), dleves; vector&lt;TreeNode*&gt; mp(501, nullptr); queue&lt;TreeNode*&gt; q, tmp; q.push(root); while (!q.empty()) { int sz = q.size(); dleves.clear(); while (sz--) { TreeNode* p = q.front(); q.pop(); dleves.push_back(p-&gt;val); mp[p-&gt;val] = p; if (p-&gt;left){ q.push(p-&gt;left); fa[p-&gt;left-&gt;val] = p-&gt;val; } if (p-&gt;right) { q.push(p-&gt;right); fa[p-&gt;right-&gt;val] = p-&gt;val; } } } while (true) { int anc = dleves[0]; bool ok = true; for (int i = 1; i &lt; dleves.size(); ++i) { if (dleves[i] != anc) { ok = false; break; } } if (ok) return mp[anc]; for (auto&amp; v : dleves) { v = fa[v]; } } return root; } }; 复杂度分析\r时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。 空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。 优化\r这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：\n">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="题目描述\r给定一个根为 root 的二叉树，每个节点的深度是 该节点到根的最短距离 。\n返回包含原始树中所有最深节点的 最小子树 。\n如果一个节点在 整个树 的任意节点之间具有最大的深度，则该节点是 最深的 。\n一个节点的 子树 是该节点加上它的所有后代的集合。\n示例 1：\r输入：root = [3,5,1,6,2,0,8,null,null,7,4] 输出：[2,7,4] 解释： 我们返回值为 2 的节点，在图中用黄色标记。 在图中用蓝色标记的是树的最深的节点。 注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。 思路\r考虑到最深的节点可能有多个\n首先考虑找到最深的叶子节点，可以用层序遍历找到所有最深的叶子节点 然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点 最后返回这个公共祖先作为结果 代码实现\r/** * Definition for a binary tree node. * struct TreeNode { * int val; * TreeNode *left; * TreeNode *right; * TreeNode() : val(0), left(nullptr), right(nullptr) {} * TreeNode(int x) : val(x), left(nullptr), right(nullptr) {} * TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {} * }; */ class Solution { public: TreeNode* subtreeWithAllDeepest(TreeNode* root) { vector&lt;int&gt; fa(501, -1), dleves; vector&lt;TreeNode*&gt; mp(501, nullptr); queue&lt;TreeNode*&gt; q, tmp; q.push(root); while (!q.empty()) { int sz = q.size(); dleves.clear(); while (sz--) { TreeNode* p = q.front(); q.pop(); dleves.push_back(p-&gt;val); mp[p-&gt;val] = p; if (p-&gt;left){ q.push(p-&gt;left); fa[p-&gt;left-&gt;val] = p-&gt;val; } if (p-&gt;right) { q.push(p-&gt;right); fa[p-&gt;right-&gt;val] = p-&gt;val; } } } while (true) { int anc = dleves[0]; bool ok = true; for (int i = 1; i &lt; dleves.size(); ++i) { if (dleves[i] != anc) { ok = false; break; } } if (ok) return mp[anc]; for (auto&amp; v : dleves) { v = fa[v]; } } return root; } }; 复杂度分析\r时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。 空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。 优化\r这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：\n">
 <title>LeetCode 865 具有所有最深节点的最小子树</title>
 
 <link rel='canonical' href='https://kalev-ovo.github.io/posts/lc865/'>
 
-<link rel="stylesheet" href="/scss/style.min.08f7e2e9c0bc1b9f47721b69c68dd9a046303a47895a6216fe6c0540030c9348.css"><meta property='og:title' content="LeetCode 865 具有所有最深节点的最小子树">
-<meta property='og:description' content="题目描述\r给定一个根为 root 的二叉树，每个节点的深度是 该节点到根的最短距离 。\n返回包含原始树中所有最深节点的 最小子树 。\n如果一个节点在 整个树 的任意节点之间具有最大的深度，则该节点是 最深的 。\n一个节点的 子树 是该节点加上它的所有后代的集合。\n示例 1：\r输入：root = [3,5,1,6,2,0,8,null,null,7,4] 输出：[2,7,4] 解释： 我们返回值为 2 的节点，在图中用黄色标记。 在图中用蓝色标记的是树的最深的节点。 注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。\n思路\r考虑到最深的节点可能有多个\n首先考虑找到最深的叶子节点，可以用层序遍历找到所有最深的叶子节点 然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点 最后返回这个公共祖先作为结果 代码实现\r/** * Definition for a binary tree node. * struct TreeNode { * int val; * TreeNode *left; * TreeNode *right; * TreeNode() : val(0), left(nullptr), right(nullptr) {} * TreeNode(int x) : val(x), left(nullptr), right(nullptr) {} * TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {} * }; */ class Solution { public: TreeNode* subtreeWithAllDeepest(TreeNode* root) { vector&lt;int&gt; fa(501, -1), dleves; vector&lt;TreeNode*&gt; mp(501, nullptr); queue&lt;TreeNode*&gt; q, tmp; q.push(root); while (!q.empty()) { int sz = q.size(); dleves.clear(); while (sz--) { TreeNode* p = q.front(); q.pop(); dleves.push_back(p-&gt;val); mp[p-&gt;val] = p; if (p-&gt;left){ q.push(p-&gt;left); fa[p-&gt;left-&gt;val] = p-&gt;val; } if (p-&gt;right) { q.push(p-&gt;right); fa[p-&gt;right-&gt;val] = p-&gt;val; } } } while (true) { int anc = dleves[0]; bool ok = true; for (int i = 1; i &lt; dleves.size(); ++i) { if (dleves[i] != anc) { ok = false; break; } } if (ok) return mp[anc]; for (auto&amp; v : dleves) { v = fa[v]; } } return root; } }; 复杂度分析\r时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。 空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。 优化\r这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：\n">
+<link rel="stylesheet" href="/scss/style.min.9dc3f43a8777dadae342bada3bf585c17ae91da37af44d4694b3ef6bcbed645f.css"><meta property='og:title' content="LeetCode 865 具有所有最深节点的最小子树">
+<meta property='og:description' content="题目描述\r给定一个根为 root 的二叉树，每个节点的深度是 该节点到根的最短距离 。\n返回包含原始树中所有最深节点的 最小子树 。\n如果一个节点在 整个树 的任意节点之间具有最大的深度，则该节点是 最深的 。\n一个节点的 子树 是该节点加上它的所有后代的集合。\n示例 1：\r输入：root = [3,5,1,6,2,0,8,null,null,7,4] 输出：[2,7,4] 解释： 我们返回值为 2 的节点，在图中用黄色标记。 在图中用蓝色标记的是树的最深的节点。 注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。 思路\r考虑到最深的节点可能有多个\n首先考虑找到最深的叶子节点，可以用层序遍历找到所有最深的叶子节点 然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点 最后返回这个公共祖先作为结果 代码实现\r/** * Definition for a binary tree node. * struct TreeNode { * int val; * TreeNode *left; * TreeNode *right; * TreeNode() : val(0), left(nullptr), right(nullptr) {} * TreeNode(int x) : val(x), left(nullptr), right(nullptr) {} * TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {} * }; */ class Solution { public: TreeNode* subtreeWithAllDeepest(TreeNode* root) { vector&lt;int&gt; fa(501, -1), dleves; vector&lt;TreeNode*&gt; mp(501, nullptr); queue&lt;TreeNode*&gt; q, tmp; q.push(root); while (!q.empty()) { int sz = q.size(); dleves.clear(); while (sz--) { TreeNode* p = q.front(); q.pop(); dleves.push_back(p-&gt;val); mp[p-&gt;val] = p; if (p-&gt;left){ q.push(p-&gt;left); fa[p-&gt;left-&gt;val] = p-&gt;val; } if (p-&gt;right) { q.push(p-&gt;right); fa[p-&gt;right-&gt;val] = p-&gt;val; } } } while (true) { int anc = dleves[0]; bool ok = true; for (int i = 1; i &lt; dleves.size(); ++i) { if (dleves[i] != anc) { ok = false; break; } } if (ok) return mp[anc]; for (auto&amp; v : dleves) { v = fa[v]; } } return root; } }; 复杂度分析\r时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。 空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。 优化\r这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：\n">
 <meta property='og:url' content='https://kalev-ovo.github.io/posts/lc865/'>
 <meta property='og:site_name' content='Kalev Yang'>
 <meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='LeetCode' /><meta property='article:tag' content='DFS' /><meta property='article:published_time' content='2026-01-09T00:45:50&#43;08:00'/><meta property='article:modified_time' content='2026-01-09T00:45:50&#43;08:00'/>
 <meta name="twitter:title" content="LeetCode 865 具有所有最深节点的最小子树">
-<meta name="twitter:description" content="题目描述\r给定一个根为 root 的二叉树，每个节点的深度是 该节点到根的最短距离 。\n返回包含原始树中所有最深节点的 最小子树 。\n如果一个节点在 整个树 的任意节点之间具有最大的深度，则该节点是 最深的 。\n一个节点的 子树 是该节点加上它的所有后代的集合。\n示例 1：\r输入：root = [3,5,1,6,2,0,8,null,null,7,4] 输出：[2,7,4] 解释： 我们返回值为 2 的节点，在图中用黄色标记。 在图中用蓝色标记的是树的最深的节点。 注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。\n思路\r考虑到最深的节点可能有多个\n首先考虑找到最深的叶子节点，可以用层序遍历找到所有最深的叶子节点 然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点 最后返回这个公共祖先作为结果 代码实现\r/** * Definition for a binary tree node. * struct TreeNode { * int val; * TreeNode *left; * TreeNode *right; * TreeNode() : val(0), left(nullptr), right(nullptr) {} * TreeNode(int x) : val(x), left(nullptr), right(nullptr) {} * TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {} * }; */ class Solution { public: TreeNode* subtreeWithAllDeepest(TreeNode* root) { vector&lt;int&gt; fa(501, -1), dleves; vector&lt;TreeNode*&gt; mp(501, nullptr); queue&lt;TreeNode*&gt; q, tmp; q.push(root); while (!q.empty()) { int sz = q.size(); dleves.clear(); while (sz--) { TreeNode* p = q.front(); q.pop(); dleves.push_back(p-&gt;val); mp[p-&gt;val] = p; if (p-&gt;left){ q.push(p-&gt;left); fa[p-&gt;left-&gt;val] = p-&gt;val; } if (p-&gt;right) { q.push(p-&gt;right); fa[p-&gt;right-&gt;val] = p-&gt;val; } } } while (true) { int anc = dleves[0]; bool ok = true; for (int i = 1; i &lt; dleves.size(); ++i) { if (dleves[i] != anc) { ok = false; break; } } if (ok) return mp[anc]; for (auto&amp; v : dleves) { v = fa[v]; } } return root; } }; 复杂度分析\r时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。 空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。 优化\r这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：\n">
+<meta name="twitter:description" content="题目描述\r给定一个根为 root 的二叉树，每个节点的深度是 该节点到根的最短距离 。\n返回包含原始树中所有最深节点的 最小子树 。\n如果一个节点在 整个树 的任意节点之间具有最大的深度，则该节点是 最深的 。\n一个节点的 子树 是该节点加上它的所有后代的集合。\n示例 1：\r输入：root = [3,5,1,6,2,0,8,null,null,7,4] 输出：[2,7,4] 解释： 我们返回值为 2 的节点，在图中用黄色标记。 在图中用蓝色标记的是树的最深的节点。 注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。 思路\r考虑到最深的节点可能有多个\n首先考虑找到最深的叶子节点，可以用层序遍历找到所有最深的叶子节点 然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点 最后返回这个公共祖先作为结果 代码实现\r/** * Definition for a binary tree node. * struct TreeNode { * int val; * TreeNode *left; * TreeNode *right; * TreeNode() : val(0), left(nullptr), right(nullptr) {} * TreeNode(int x) : val(x), left(nullptr), right(nullptr) {} * TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {} * }; */ class Solution { public: TreeNode* subtreeWithAllDeepest(TreeNode* root) { vector&lt;int&gt; fa(501, -1), dleves; vector&lt;TreeNode*&gt; mp(501, nullptr); queue&lt;TreeNode*&gt; q, tmp; q.push(root); while (!q.empty()) { int sz = q.size(); dleves.clear(); while (sz--) { TreeNode* p = q.front(); q.pop(); dleves.push_back(p-&gt;val); mp[p-&gt;val] = p; if (p-&gt;left){ q.push(p-&gt;left); fa[p-&gt;left-&gt;val] = p-&gt;val; } if (p-&gt;right) { q.push(p-&gt;right); fa[p-&gt;right-&gt;val] = p-&gt;val; } } } while (true) { int anc = dleves[0]; bool ok = true; for (int i = 1; i &lt; dleves.size(); ++i) { if (dleves[i] != anc) { ok = false; break; } } if (ok) return mp[anc]; for (auto&amp; v : dleves) { v = fa[v]; } } return root; } }; 复杂度分析\r时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。 空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。 优化\r这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：\n">
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+
     </head>
     <body class="
     article-page
@@ -58,7 +60,7 @@
                             
                             
                                 
-                                <img src="/img/avatar_hu_b5976aa1afdc1d2e.png" width="300"
+                                <img src="/img/avatar_hu_514176dbc2adee84.jpg" width="300"
                                     height="300" class="site-logo" loading="lazy" alt="Avatar">
                             
                         
@@ -90,11 +92,31 @@
         
         
         <li >
-            <a href='/about' >
+            <a href='/page/about' >
                 
                 
                 
                     <span class="hidden-post">关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives' >
+                
+                
+                
+                    <span class="hidden-post">归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search' >
+                
+                
+                
+                    <span class="hidden-post">搜索</span>
             </a>
         </li>
         
@@ -410,12 +432,14 @@
 	
 	
 ></p>
-<p>输入：root = [3,5,1,6,2,0,8,null,null,7,4]
-输出：[2,7,4]
-解释：
+<ul>
+<li>输入：root = [3,5,1,6,2,0,8,null,null,7,4]</li>
+<li>输出：[2,7,4]</li>
+<li>解释：
 我们返回值为 2 的节点，在图中用黄色标记。
 在图中用蓝色标记的是树的最深的节点。
-注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。</p>
+注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。</li>
+</ul>
 <h2 id="思路">思路
 </h2><p>考虑到最深的节点可能有多个</p>
 <ul>
@@ -541,6 +565,38 @@
 
 
     
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const elementsToRender = [".main-article", ".widget--toc"];
+
+        elementsToRender.forEach(selector => {
+            const element = document.querySelector(selector);
+            if (element) {
+                renderMathInElement(element, {
+                    delimiters: [
+                        { left: "$$", right: "$$", display: true },
+                        { left: "$", right: "$", display: false },
+                        { left: "\\(", right: "\\)", display: false },
+                        { left: "\\[", right: "\\]", display: true }
+                    ],
+                    ignoredClasses: ["gist"]
+                });
+            }
+        });
+    });
+</script>
+    
 </article>
 
     
@@ -552,6 +608,8 @@
                 <a class="pre-next-btn bg" href="https://kalev-ovo.github.io/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5spaceship-titanic%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0/">&lt;&lt; 神经网络实践：Spaceship Titanic预测模型优化笔记</a>
             
             
+                <a class="pre-next-btn bg" href="https://kalev-ovo.github.io/posts/code-blocks-beautify/">Code Blocks Beautify >></a>
+            
         </div>
      
     
@@ -561,6 +619,8 @@
     <footer class="site-footer">
     <section class="copyright">
         &copy; 
+        
+            2025 - 
         
         2026 Kalev Yang
     </section>
