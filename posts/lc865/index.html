@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="题目描述\r给定一个根为 root 的二叉树，每个节点的深度是 该节点到根的最短距离 。\n返回包含原始树中所有最深节点的 最小子树 。\n如果一个节点在 整个树 的任意节点之间具有最大的深度，则该节点是 最深的 。\n一个节点的 子树 是该节点加上它的所有后代的集合。\n示例 1：\r输入：root = [3,5,1,6,2,0,8,null,null,7,4] 输出：[2,7,4] 解释： 我们返回值为 2 的节点，在图中用黄色标记。 在图中用蓝色标记的是树的最深的节点。 注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。\n思路\r考虑到最深的节点可能有多个\n首先考虑找到最深的叶子节点，可以用层序遍历找到所有最深的叶子节点 然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点 最后返回这个公共祖先作为结果 代码实现\r/** * Definition for a binary tree node. * struct TreeNode { * int val; * TreeNode *left; * TreeNode *right; * TreeNode() : val(0), left(nullptr), right(nullptr) {} * TreeNode(int x) : val(x), left(nullptr), right(nullptr) {} * TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {} * }; */ class Solution { public: TreeNode* subtreeWithAllDeepest(TreeNode* root) { vector&lt;int&gt; fa(501, -1), dleves; vector&lt;TreeNode*&gt; mp(501, nullptr); queue&lt;TreeNode*&gt; q, tmp; q.push(root); while (!q.empty()) { int sz = q.size(); dleves.clear(); while (sz--) { TreeNode* p = q.front(); q.pop(); dleves.push_back(p-&gt;val); mp[p-&gt;val] = p; if (p-&gt;left){ q.push(p-&gt;left); fa[p-&gt;left-&gt;val] = p-&gt;val; } if (p-&gt;right) { q.push(p-&gt;right); fa[p-&gt;right-&gt;val] = p-&gt;val; } } } while (true) { int anc = dleves[0]; bool ok = true; for (int i = 1; i &lt; dleves.size(); ++i) { if (dleves[i] != anc) { ok = false; break; } } if (ok) return mp[anc]; for (auto&amp; v : dleves) { v = fa[v]; } } return root; } }; 复杂度分析\r时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。 空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。 优化\r这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：\n">
+<title>LeetCode 865 具有所有最深节点的最小子树</title>
+
+<link rel='canonical' href='http://localhost:1313/posts/lc865/'>
+
+<link rel="stylesheet" href="/scss/style.min.08f7e2e9c0bc1b9f47721b69c68dd9a046303a47895a6216fe6c0540030c9348.css"><meta property='og:title' content="LeetCode 865 具有所有最深节点的最小子树">
+<meta property='og:description' content="题目描述\r给定一个根为 root 的二叉树，每个节点的深度是 该节点到根的最短距离 。\n返回包含原始树中所有最深节点的 最小子树 。\n如果一个节点在 整个树 的任意节点之间具有最大的深度，则该节点是 最深的 。\n一个节点的 子树 是该节点加上它的所有后代的集合。\n示例 1：\r输入：root = [3,5,1,6,2,0,8,null,null,7,4] 输出：[2,7,4] 解释： 我们返回值为 2 的节点，在图中用黄色标记。 在图中用蓝色标记的是树的最深的节点。 注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。\n思路\r考虑到最深的节点可能有多个\n首先考虑找到最深的叶子节点，可以用层序遍历找到所有最深的叶子节点 然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点 最后返回这个公共祖先作为结果 代码实现\r/** * Definition for a binary tree node. * struct TreeNode { * int val; * TreeNode *left; * TreeNode *right; * TreeNode() : val(0), left(nullptr), right(nullptr) {} * TreeNode(int x) : val(x), left(nullptr), right(nullptr) {} * TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {} * }; */ class Solution { public: TreeNode* subtreeWithAllDeepest(TreeNode* root) { vector&lt;int&gt; fa(501, -1), dleves; vector&lt;TreeNode*&gt; mp(501, nullptr); queue&lt;TreeNode*&gt; q, tmp; q.push(root); while (!q.empty()) { int sz = q.size(); dleves.clear(); while (sz--) { TreeNode* p = q.front(); q.pop(); dleves.push_back(p-&gt;val); mp[p-&gt;val] = p; if (p-&gt;left){ q.push(p-&gt;left); fa[p-&gt;left-&gt;val] = p-&gt;val; } if (p-&gt;right) { q.push(p-&gt;right); fa[p-&gt;right-&gt;val] = p-&gt;val; } } } while (true) { int anc = dleves[0]; bool ok = true; for (int i = 1; i &lt; dleves.size(); ++i) { if (dleves[i] != anc) { ok = false; break; } } if (ok) return mp[anc]; for (auto&amp; v : dleves) { v = fa[v]; } } return root; } }; 复杂度分析\r时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。 空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。 优化\r这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：\n">
+<meta property='og:url' content='http://localhost:1313/posts/lc865/'>
+<meta property='og:site_name' content='Kalev Yang'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='LeetCode' /><meta property='article:tag' content='DFS' /><meta property='article:published_time' content='2026-01-09T00:45:50&#43;08:00'/><meta property='article:modified_time' content='2026-01-09T00:45:50&#43;08:00'/>
+<meta name="twitter:title" content="LeetCode 865 具有所有最深节点的最小子树">
+<meta name="twitter:description" content="题目描述\r给定一个根为 root 的二叉树，每个节点的深度是 该节点到根的最短距离 。\n返回包含原始树中所有最深节点的 最小子树 。\n如果一个节点在 整个树 的任意节点之间具有最大的深度，则该节点是 最深的 。\n一个节点的 子树 是该节点加上它的所有后代的集合。\n示例 1：\r输入：root = [3,5,1,6,2,0,8,null,null,7,4] 输出：[2,7,4] 解释： 我们返回值为 2 的节点，在图中用黄色标记。 在图中用蓝色标记的是树的最深的节点。 注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。\n思路\r考虑到最深的节点可能有多个\n首先考虑找到最深的叶子节点，可以用层序遍历找到所有最深的叶子节点 然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点 最后返回这个公共祖先作为结果 代码实现\r/** * Definition for a binary tree node. * struct TreeNode { * int val; * TreeNode *left; * TreeNode *right; * TreeNode() : val(0), left(nullptr), right(nullptr) {} * TreeNode(int x) : val(x), left(nullptr), right(nullptr) {} * TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {} * }; */ class Solution { public: TreeNode* subtreeWithAllDeepest(TreeNode* root) { vector&lt;int&gt; fa(501, -1), dleves; vector&lt;TreeNode*&gt; mp(501, nullptr); queue&lt;TreeNode*&gt; q, tmp; q.push(root); while (!q.empty()) { int sz = q.size(); dleves.clear(); while (sz--) { TreeNode* p = q.front(); q.pop(); dleves.push_back(p-&gt;val); mp[p-&gt;val] = p; if (p-&gt;left){ q.push(p-&gt;left); fa[p-&gt;left-&gt;val] = p-&gt;val; } if (p-&gt;right) { q.push(p-&gt;right); fa[p-&gt;right-&gt;val] = p-&gt;val; } } } while (true) { int anc = dleves[0]; bool ok = true; for (int i = 1; i &lt; dleves.size(); ++i) { if (dleves[i] != anc) { ok = false; break; } } if (ok) return mp[anc]; for (auto&amp; v : dleves) { v = fa[v]; } } return root; } }; 复杂度分析\r时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。 空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。 需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。 优化\r这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended">
+
+<aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+    
+    <header>
+        
+            
+                <figure class="site-avatar hidden-post">
+                    <a href="/">
+                        
+                            
+                            
+                            
+                                
+                                <img src="/img/avatar_hu_b5976aa1afdc1d2e.png" width="300"
+                                    height="300" class="site-logo" loading="lazy" alt="Avatar">
+                            
+                        
+                    </a>
+                    
+                </figure>
+            
+        
+
+        <div class="site-meta">
+            <h1 class="site-name hidden-post"><a href="/">Kalev Yang</a></h1>
+            <h2 class="site-description hidden-post"></h2>
+        </div>
+    </header>
+
+    <ol class="menu" id="main-menu">
+        
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <span class="hidden-post">首页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about' >
+                
+                
+                
+                    <span class="hidden-post">关于</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span class="hidden-post">暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+<style>
+     
+    .hidden-post {
+        display: block;
+    }
+
+     
+    @media (min-width: 768px) {
+        
+    }
+
+     
+    @media (max-width: 767px) {
+        .hidden-post {
+            display: block !important;
+        }
+        #back-button {
+            display: none;
+        }
+    }
+</style>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    
+    <button id="toggle-toc" class="mobile-only">Toc</button>
+    <section class="widget archives" id="toc-container">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#题目描述">题目描述</a>
+      <ul>
+        <li><a href="#示例-1">示例 1：</a></li>
+      </ul>
+    </li>
+    <li><a href="#思路">思路</a>
+      <ul>
+        <li><a href="#代码实现">代码实现</a></li>
+        <li><a href="#复杂度分析">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#优化">优化</a>
+      <ul>
+        <li><a href="#代码实现-1">代码实现</a></li>
+        <li><a href="#leetcode-个人主页">LeetCode 个人主页</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+
+<style>
+    .container {
+        .right-sidebar {
+             
+            display: flex;
+        }
+    }
+
+     
+    .mobile-only {
+        display: none !important;
+    }
+
+    #toc-container {
+         
+         
+        position: fixed;
+         
+        bottom: 21%;
+         
+        right: 60px;
+         
+        background-color: var(--card-background);
+         
+        padding: 10px;
+         
+        border: 1px solid #96979a50;
+        border-radius: var(--card-border-radius);
+         
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+         
+        z-index: 9998 !important;
+         
+        max-height: 75vh;
+        overflow-y: auto;
+         
+        width: auto;
+        max-width: 290px;
+    }
+
+    #toggle-toc {
+        position: fixed;
+        bottom: 22%;
+        right: 20px;
+        padding: 10px 10px;
+        z-index: 9998 !important;
+        border: 0px solid #96979a50;
+        border-radius: 7px;
+        box-shadow: var(--shadow-l1);
+        background-color: #00640010;
+        color: #34495e;
+         
+        display: none;  
+        margin-bottom: -20px;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+
+    .widget--toc #TableOfContents {
+        overflow-x: auto;
+        max-height: 66vh;
+        width: auto;
+    }
+
+    @media screen and (max-width: 768px) {
+        .mobile-only {
+            display: block !important;  
+        }
+
+        #toc-container {
+            display: none;  
+        }
+
+        #toggle-toc {
+            display: block;  
+            bottom: 100px;  
+        }
+    }
+
+     
+    @media screen and (min-width: 769px) {
+        #toc-container {
+            display: block !important;  
+            position: static;  
+            border: none;  
+            box-shadow: none;  
+            max-height: none;  
+            overflow-y: visible;  
+            margin-top: 20px;  
+            right: auto;  
+            bottom: auto;  
+            width: auto;  
+            max-width: 100%;  
+            background-color: transparent;  
+            padding: 0;  
+        }
+
+        #toggle-toc {
+            display: none !important;  
+        }
+    }
+</style>
+<script>
+    var toggleButton = document.getElementById('toggle-toc');
+    var tocContainer = document.getElementById('toc-container');
+
+    
+    toggleButton.addEventListener('click', function() {
+        if (tocContainer.style.display === 'none' || tocContainer.style.display === '') {
+            tocContainer.style.display = 'block';
+        } else {
+            tocContainer.style.display = 'none';
+        }
+    });
+
+    
+    toggleButton.addEventListener('mouseover', function() {
+        
+            tocContainer.style.display = 'block';
+        
+    });
+
+    
+    document.addEventListener('click', function(event) {
+        
+            
+            if (!tocContainer.contains(event.target) && event.target !== toggleButton) {
+                
+                tocContainer.style.display = 'none';
+            }
+        
+    });
+</script>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/lc865/">LeetCode 865 具有所有最深节点的最小子树</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2026-01-09T00:45:50&#43;08:00'>Jan 09, 2026</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 2 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="题目描述">题目描述
+</h2><p>给定一个根为 root 的二叉树，每个节点的深度是 <strong>该节点到根的最短距离</strong> 。</p>
+<p>返回包含原始树中所有<strong>最深节点</strong>的 <strong>最小子树</strong> 。</p>
+<p>如果一个节点在 <strong>整个树</strong> 的任意节点之间具有最大的深度，则该节点是 <strong>最深的</strong> 。</p>
+<p>一个节点的 <strong>子树</strong> 是该节点加上它的所有后代的集合。</p>
+<h3 id="示例-1">示例 1：
+</h3><p><img src="https://s3-lc-upload.s3.amazonaws.com/uploads/2018/07/01/sketch1.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>输入：root = [3,5,1,6,2,0,8,null,null,7,4]
+输出：[2,7,4]
+解释：
+我们返回值为 2 的节点，在图中用黄色标记。
+在图中用蓝色标记的是树的最深的节点。
+注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。</p>
+<h2 id="思路">思路
+</h2><p>考虑到最深的节点可能有多个</p>
+<ul>
+<li>首先考虑找到最深的叶子节点，可以用<strong>层序遍历</strong>找到所有最深的叶子节点</li>
+<li>然后从这些最深的叶子节点开始，向上遍历，找到第一个公共祖先，这个公共祖先就是我们要找的最小子树的根节点</li>
+<li>最后返回这个公共祖先作为结果</li>
+</ul>
+<h3 id="代码实现">代码实现
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Definition for a binary tree node.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * struct TreeNode {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     int val;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     TreeNode *left;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     TreeNode *right;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * };
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Solution</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    TreeNode<span style="color:#f92672">*</span> subtreeWithAllDeepest(TreeNode<span style="color:#f92672">*</span> root) {
+</span></span><span style="display:flex;"><span>        vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> fa(<span style="color:#ae81ff">501</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>), dleves;
+</span></span><span style="display:flex;"><span>        vector<span style="color:#f92672">&lt;</span>TreeNode<span style="color:#f92672">*&gt;</span> mp(<span style="color:#ae81ff">501</span>, <span style="color:#66d9ef">nullptr</span>);
+</span></span><span style="display:flex;"><span>        queue<span style="color:#f92672">&lt;</span>TreeNode<span style="color:#f92672">*&gt;</span> q, tmp;
+</span></span><span style="display:flex;"><span>        q.push(root);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (<span style="color:#f92672">!</span>q.empty()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> sz <span style="color:#f92672">=</span> q.size();
+</span></span><span style="display:flex;"><span>            dleves.clear();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (sz<span style="color:#f92672">--</span>) {
+</span></span><span style="display:flex;"><span>                TreeNode<span style="color:#f92672">*</span> p <span style="color:#f92672">=</span> q.front();
+</span></span><span style="display:flex;"><span>                q.pop();
+</span></span><span style="display:flex;"><span>                dleves.push_back(p<span style="color:#f92672">-&gt;</span>val);
+</span></span><span style="display:flex;"><span>                mp[p<span style="color:#f92672">-&gt;</span>val] <span style="color:#f92672">=</span> p;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (p<span style="color:#f92672">-&gt;</span>left){
+</span></span><span style="display:flex;"><span>                    q.push(p<span style="color:#f92672">-&gt;</span>left);
+</span></span><span style="display:flex;"><span>                    fa[p<span style="color:#f92672">-&gt;</span>left<span style="color:#f92672">-&gt;</span>val] <span style="color:#f92672">=</span> p<span style="color:#f92672">-&gt;</span>val;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (p<span style="color:#f92672">-&gt;</span>right) {
+</span></span><span style="display:flex;"><span>                    q.push(p<span style="color:#f92672">-&gt;</span>right); 
+</span></span><span style="display:flex;"><span>                    fa[p<span style="color:#f92672">-&gt;</span>right<span style="color:#f92672">-&gt;</span>val] <span style="color:#f92672">=</span> p<span style="color:#f92672">-&gt;</span>val;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (true) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> anc <span style="color:#f92672">=</span> dleves[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">bool</span> ok <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;</span> dleves.size(); <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (dleves[i] <span style="color:#f92672">!=</span> anc) {
+</span></span><span style="display:flex;"><span>                    ok <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (ok) <span style="color:#66d9ef">return</span> mp[anc];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">auto</span><span style="color:#f92672">&amp;</span> v : dleves) {
+</span></span><span style="display:flex;"><span>                v <span style="color:#f92672">=</span> fa[v];
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> root;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h3 id="复杂度分析">复杂度分析
+</h3><ul>
+<li>时间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。
+需要进行一次层序遍历$O(n)$，以及一次向上跳跃寻找公共祖先的过程$O(logn)$。</li>
+<li>空间复杂度：$O(n)$，其中 $n$ 是二叉树的节点数。
+需要存储二叉树每个节点的父亲节点，以及层序遍历的队列等等。</li>
+</ul>
+<h2 id="优化">优化
+</h2><p>这样虽然是很朴素的想法，但实际上不够直接，仔细思考发现：</p>
+<ul>
+<li>最深子树的根节点意味着其左右子树的深度相同</li>
+<li>答案一定在左子树或右子树中</li>
+<li>可以用<strong>DFS</strong>来解决</li>
+</ul>
+<h3 id="代码实现-1">代码实现
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Definition for a binary tree node.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * struct TreeNode {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     int val;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     TreeNode *left;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     TreeNode *right;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * };
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Solution</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    pair<span style="color:#f92672">&lt;</span>TreeNode<span style="color:#f92672">*</span>, <span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> dfs(TreeNode<span style="color:#f92672">*</span> p) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>p) <span style="color:#66d9ef">return</span> {<span style="color:#66d9ef">nullptr</span>, <span style="color:#ae81ff">0</span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">auto</span> [l, ln] <span style="color:#f92672">=</span> dfs(p<span style="color:#f92672">-&gt;</span>left);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">auto</span> [r, rn] <span style="color:#f92672">=</span> dfs(p<span style="color:#f92672">-&gt;</span>right);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (ln <span style="color:#f92672">&gt;</span> rn) <span style="color:#66d9ef">return</span> {l, ln<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>};
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (rn <span style="color:#f92672">&gt;</span> ln) <span style="color:#66d9ef">return</span> {r, rn<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>};
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {p, ln<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>}; 
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    TreeNode<span style="color:#f92672">*</span> <span style="color:#a6e22e">subtreeWithAllDeepest</span>(TreeNode<span style="color:#f92672">*</span> root) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> dfs(root).first;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h3 id="leetcode-个人主页">LeetCode 个人主页
+</h3><p><a class="link" href="https://leetcode.cn/u/kalev/"  target="_blank" rel="noopener"
+    >https://leetcode.cn/u/kalev/</a></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/leetcode/">LeetCode</a>
+        
+            <a href="/tags/dfs/">DFS</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+        <div class="pre-next">
+            
+                <a class="pre-next-btn bg" href="http://localhost:1313/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5spaceship-titanic%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0/">&lt;&lt; 神经网络实践：Spaceship Titanic预测模型优化笔记</a>
+            
+            
+        </div>
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 Kalev Yang
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.96acec83dfcd5eb59006885a6707d8f9c49d7a1e91d6d15380863724c6dca65e.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

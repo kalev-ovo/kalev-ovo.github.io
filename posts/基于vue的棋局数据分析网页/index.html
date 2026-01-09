@@ -1,336 +1,434 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<html lang="zh-CN" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="围棋分析系统\r缘由\r从25年1月初开始学围棋，基本上在野狐围棋上对局。但是苦于野狐围棋并没有个人的黑棋白棋胜率及更多的分析数据，于是想自己实现一个基于Vue的棋局数据分析网页\n项目概述\r这是一个基于Vue 3构建的围棋对局分析系统，用于记录、管理和分析围棋对局。系统支持SGF文件导入、对局数据存储、胜率统计分析以及棋局详情查看等功能\n技术栈\r前端框架: Vue 3 + Vite 状态管理: Pinia 路由管理: Vue Router 数据可视化: Chart.js 本地存储: IndexedDB (通过idb库) SGF解析: @sabaki/sgf 语言: TypeScript 构建工具: Vite 项目结构\r├── src/ │ ├── assets/ # 静态资源 │ ├── components/ # 组件 │ ├── lib/ # 工具函数库 │ ├── router/ # 路由配置 │ ├── stores/ # 状态管理 │ ├── types/ # 类型定义 │ ├── views/ # 页面组件 │ ├── App.vue # 应用根组件 │ └── main.ts # 入口文件 ├── public/ # 公共资源 ├── .vscode/ # VSCode配置 ├── tsconfig.json # TypeScript配置 ├── vite.config.ts # Vite配置 └── package.json # 项目依赖 核心功能模块\r1. 数据存储模块\r使用IndexedDB存储对局数据 提供完整的增删改查操作 通过idb库简化IndexedDB操作 2. SGF解析模块\r解析SGF格式的对局记录 提取对局元数据（日期、对局者、结果等） 提取手数、让子、贴目等信息 3. 对局管理模块\r添加对局（支持SGF文件导入） 查看对局列表和详情 删除对局记录 筛选和排序功能 4. 数据统计模块\r计算并展示总对局数 统计黑棋和白棋胜率 展示胜率趋势图表 关键文件说明\r1. 数据存储\rsrc/lib/db.ts: 数据库初始化和配置 import { openDB } from &#39;idb&#39;; export const initDB = async () =&gt; { return openDB(&#39;GoDB&#39;, 1, { upgrade(db) { if (!db.objectStoreNames.contains(&#39;games&#39;)) { const store = db.createObjectStore(&#39;games&#39;, { keyPath: &#39;id&#39;, autoIncrement: true }); store.createIndex(&#39;date&#39;, &#39;date&#39;); store.createIndex(&#39;color&#39;, &#39;color&#39;); store.createIndex(&#39;result&#39;, &#39;result&#39;); } } }); }; 2. 状态管理\rsrc/stores/games.ts: 棋局数据的状态管理 存储棋局列表 提供数据计算（胜率、弱点分析等） 封装数据库操作 3. SGF解析\rsrc/lib/sgf.ts: SGF文件解析工具 解析SGF字符串 提取对局信息和手数 4. 页面组件\rGameList.vue: 对局列表页面 GameDetail.vue: 对局详情页面 AddGame.vue: 添加对局页面 Statistics.vue: 数据统计页面 路由配置\rimport { createRouter, createWebHistory } from &#39;vue-router&#39; import HomeView from &#39;../views/HomeView.vue&#39; const router = createRouter({ history: createWebHistory(import.meta.env.BASE_URL), routes: [ { path: &#39;/&#39;, name: &#39;home&#39;, component: HomeView, }, { path: &#39;/about&#39;, name: &#39;about&#39;, component: () =&gt; import(&#39;../views/AboutView.vue&#39;), }, { path: &#39;/game-list&#39;, name: &#39;game-list&#39;, component: () =&gt; import(&#39;../views/GameList.vue&#39;), }, { path: &#39;/add-game&#39;, name: &#39;add-game&#39;, component: () =&gt; import(&#39;../views/AddGame.vue&#39;), }, { path: &#39;/statistics&#39;, name: &#39;statistics&#39;, component: () =&gt; import(&#39;../views/Statistics.vue&#39;), }, { path: &#39;/game/:id&#39;, name: &#39;game-detail&#39;, component: () =&gt; import(&#39;../views/GameDetail.vue&#39;), }, ], }) export default router 核心数据类型\rGame接口\rexport interface Game { id?: number; date: string; color: &#39;black&#39; | &#39;white&#39;; opponent: string; result: &#39;win&#39; | &#39;loss&#39; | &#39;draw&#39;; sgf: string; createdAt: string; analysis?: { winRate: number[]; mistakes: { move: number; position: string; severity: number }[]; }; } 使用说明\r安装依赖\rnpm install 开发模式启动\rnpm run dev 构建生产版本\rnpm run build 预览生产版本\rnpm run preview 功能说明\r添加对局\r点击&quot;添加对局&quot;导航 选择SGF格式的对局文件 系统自动解析对局信息 确认信息无误后保存对局 查看对局列表\r点击&quot;对局列表&quot;导航 可根据结果和颜色进行筛选 列表显示对局的关键信息，包括日期、颜色、对手、手数、让子和结果 点击&quot;查看&quot;按钮进入对局详情 点击&quot;删除&quot;按钮删除对局 查看统计数据\r点击&quot;统计&quot;导航 查看总对局数、黑棋胜率和白棋胜率 查看胜率趋势图表 项目特点\r本地存储: 所有数据存储在浏览器的IndexedDB中，无需后端服务 SGF支持: 支持标准SGF格式的围棋对局文件导入和解析 数据可视化: 使用Chart.js提供胜率趋势图表 响应式设计: 适配不同屏幕尺寸 类型安全: 使用TypeScript确保代码质量和开发体验 扩展方向\r增加AI分析功能 添加对局复盘功能 支持多用户数据同步 添加更多统计图表和数据洞察 实现对局评论和笔记功能 ">
+<title>基于Vue的棋局数据分析网页</title>
+
+<link rel='canonical' href='https://kalev-ovo.github.io/posts/%E5%9F%BA%E4%BA%8Evue%E7%9A%84%E6%A3%8B%E5%B1%80%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E7%BD%91%E9%A1%B5/'>
+
+<link rel="stylesheet" href="/scss/style.min.08f7e2e9c0bc1b9f47721b69c68dd9a046303a47895a6216fe6c0540030c9348.css"><meta property='og:title' content="基于Vue的棋局数据分析网页">
+<meta property='og:description' content="围棋分析系统\r缘由\r从25年1月初开始学围棋，基本上在野狐围棋上对局。但是苦于野狐围棋并没有个人的黑棋白棋胜率及更多的分析数据，于是想自己实现一个基于Vue的棋局数据分析网页\n项目概述\r这是一个基于Vue 3构建的围棋对局分析系统，用于记录、管理和分析围棋对局。系统支持SGF文件导入、对局数据存储、胜率统计分析以及棋局详情查看等功能\n技术栈\r前端框架: Vue 3 + Vite 状态管理: Pinia 路由管理: Vue Router 数据可视化: Chart.js 本地存储: IndexedDB (通过idb库) SGF解析: @sabaki/sgf 语言: TypeScript 构建工具: Vite 项目结构\r├── src/ │ ├── assets/ # 静态资源 │ ├── components/ # 组件 │ ├── lib/ # 工具函数库 │ ├── router/ # 路由配置 │ ├── stores/ # 状态管理 │ ├── types/ # 类型定义 │ ├── views/ # 页面组件 │ ├── App.vue # 应用根组件 │ └── main.ts # 入口文件 ├── public/ # 公共资源 ├── .vscode/ # VSCode配置 ├── tsconfig.json # TypeScript配置 ├── vite.config.ts # Vite配置 └── package.json # 项目依赖 核心功能模块\r1. 数据存储模块\r使用IndexedDB存储对局数据 提供完整的增删改查操作 通过idb库简化IndexedDB操作 2. SGF解析模块\r解析SGF格式的对局记录 提取对局元数据（日期、对局者、结果等） 提取手数、让子、贴目等信息 3. 对局管理模块\r添加对局（支持SGF文件导入） 查看对局列表和详情 删除对局记录 筛选和排序功能 4. 数据统计模块\r计算并展示总对局数 统计黑棋和白棋胜率 展示胜率趋势图表 关键文件说明\r1. 数据存储\rsrc/lib/db.ts: 数据库初始化和配置 import { openDB } from &#39;idb&#39;; export const initDB = async () =&gt; { return openDB(&#39;GoDB&#39;, 1, { upgrade(db) { if (!db.objectStoreNames.contains(&#39;games&#39;)) { const store = db.createObjectStore(&#39;games&#39;, { keyPath: &#39;id&#39;, autoIncrement: true }); store.createIndex(&#39;date&#39;, &#39;date&#39;); store.createIndex(&#39;color&#39;, &#39;color&#39;); store.createIndex(&#39;result&#39;, &#39;result&#39;); } } }); }; 2. 状态管理\rsrc/stores/games.ts: 棋局数据的状态管理 存储棋局列表 提供数据计算（胜率、弱点分析等） 封装数据库操作 3. SGF解析\rsrc/lib/sgf.ts: SGF文件解析工具 解析SGF字符串 提取对局信息和手数 4. 页面组件\rGameList.vue: 对局列表页面 GameDetail.vue: 对局详情页面 AddGame.vue: 添加对局页面 Statistics.vue: 数据统计页面 路由配置\rimport { createRouter, createWebHistory } from &#39;vue-router&#39; import HomeView from &#39;../views/HomeView.vue&#39; const router = createRouter({ history: createWebHistory(import.meta.env.BASE_URL), routes: [ { path: &#39;/&#39;, name: &#39;home&#39;, component: HomeView, }, { path: &#39;/about&#39;, name: &#39;about&#39;, component: () =&gt; import(&#39;../views/AboutView.vue&#39;), }, { path: &#39;/game-list&#39;, name: &#39;game-list&#39;, component: () =&gt; import(&#39;../views/GameList.vue&#39;), }, { path: &#39;/add-game&#39;, name: &#39;add-game&#39;, component: () =&gt; import(&#39;../views/AddGame.vue&#39;), }, { path: &#39;/statistics&#39;, name: &#39;statistics&#39;, component: () =&gt; import(&#39;../views/Statistics.vue&#39;), }, { path: &#39;/game/:id&#39;, name: &#39;game-detail&#39;, component: () =&gt; import(&#39;../views/GameDetail.vue&#39;), }, ], }) export default router 核心数据类型\rGame接口\rexport interface Game { id?: number; date: string; color: &#39;black&#39; | &#39;white&#39;; opponent: string; result: &#39;win&#39; | &#39;loss&#39; | &#39;draw&#39;; sgf: string; createdAt: string; analysis?: { winRate: number[]; mistakes: { move: number; position: string; severity: number }[]; }; } 使用说明\r安装依赖\rnpm install 开发模式启动\rnpm run dev 构建生产版本\rnpm run build 预览生产版本\rnpm run preview 功能说明\r添加对局\r点击&quot;添加对局&quot;导航 选择SGF格式的对局文件 系统自动解析对局信息 确认信息无误后保存对局 查看对局列表\r点击&quot;对局列表&quot;导航 可根据结果和颜色进行筛选 列表显示对局的关键信息，包括日期、颜色、对手、手数、让子和结果 点击&quot;查看&quot;按钮进入对局详情 点击&quot;删除&quot;按钮删除对局 查看统计数据\r点击&quot;统计&quot;导航 查看总对局数、黑棋胜率和白棋胜率 查看胜率趋势图表 项目特点\r本地存储: 所有数据存储在浏览器的IndexedDB中，无需后端服务 SGF支持: 支持标准SGF格式的围棋对局文件导入和解析 数据可视化: 使用Chart.js提供胜率趋势图表 响应式设计: 适配不同屏幕尺寸 类型安全: 使用TypeScript确保代码质量和开发体验 扩展方向\r增加AI分析功能 添加对局复盘功能 支持多用户数据同步 添加更多统计图表和数据洞察 实现对局评论和笔记功能 ">
+<meta property='og:url' content='https://kalev-ovo.github.io/posts/%E5%9F%BA%E4%BA%8Evue%E7%9A%84%E6%A3%8B%E5%B1%80%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E7%BD%91%E9%A1%B5/'>
+<meta property='og:site_name' content='Kalev Yang'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='Vue' /><meta property='article:tag' content='棋局数据分析' /><meta property='article:tag' content='前端开发' /><meta property='article:published_time' content='2025-10-28T16:25:41&#43;00:00'/><meta property='article:modified_time' content='2025-10-28T16:25:41&#43;00:00'/>
+<meta name="twitter:title" content="基于Vue的棋局数据分析网页">
+<meta name="twitter:description" content="围棋分析系统\r缘由\r从25年1月初开始学围棋，基本上在野狐围棋上对局。但是苦于野狐围棋并没有个人的黑棋白棋胜率及更多的分析数据，于是想自己实现一个基于Vue的棋局数据分析网页\n项目概述\r这是一个基于Vue 3构建的围棋对局分析系统，用于记录、管理和分析围棋对局。系统支持SGF文件导入、对局数据存储、胜率统计分析以及棋局详情查看等功能\n技术栈\r前端框架: Vue 3 + Vite 状态管理: Pinia 路由管理: Vue Router 数据可视化: Chart.js 本地存储: IndexedDB (通过idb库) SGF解析: @sabaki/sgf 语言: TypeScript 构建工具: Vite 项目结构\r├── src/ │ ├── assets/ # 静态资源 │ ├── components/ # 组件 │ ├── lib/ # 工具函数库 │ ├── router/ # 路由配置 │ ├── stores/ # 状态管理 │ ├── types/ # 类型定义 │ ├── views/ # 页面组件 │ ├── App.vue # 应用根组件 │ └── main.ts # 入口文件 ├── public/ # 公共资源 ├── .vscode/ # VSCode配置 ├── tsconfig.json # TypeScript配置 ├── vite.config.ts # Vite配置 └── package.json # 项目依赖 核心功能模块\r1. 数据存储模块\r使用IndexedDB存储对局数据 提供完整的增删改查操作 通过idb库简化IndexedDB操作 2. SGF解析模块\r解析SGF格式的对局记录 提取对局元数据（日期、对局者、结果等） 提取手数、让子、贴目等信息 3. 对局管理模块\r添加对局（支持SGF文件导入） 查看对局列表和详情 删除对局记录 筛选和排序功能 4. 数据统计模块\r计算并展示总对局数 统计黑棋和白棋胜率 展示胜率趋势图表 关键文件说明\r1. 数据存储\rsrc/lib/db.ts: 数据库初始化和配置 import { openDB } from &#39;idb&#39;; export const initDB = async () =&gt; { return openDB(&#39;GoDB&#39;, 1, { upgrade(db) { if (!db.objectStoreNames.contains(&#39;games&#39;)) { const store = db.createObjectStore(&#39;games&#39;, { keyPath: &#39;id&#39;, autoIncrement: true }); store.createIndex(&#39;date&#39;, &#39;date&#39;); store.createIndex(&#39;color&#39;, &#39;color&#39;); store.createIndex(&#39;result&#39;, &#39;result&#39;); } } }); }; 2. 状态管理\rsrc/stores/games.ts: 棋局数据的状态管理 存储棋局列表 提供数据计算（胜率、弱点分析等） 封装数据库操作 3. SGF解析\rsrc/lib/sgf.ts: SGF文件解析工具 解析SGF字符串 提取对局信息和手数 4. 页面组件\rGameList.vue: 对局列表页面 GameDetail.vue: 对局详情页面 AddGame.vue: 添加对局页面 Statistics.vue: 数据统计页面 路由配置\rimport { createRouter, createWebHistory } from &#39;vue-router&#39; import HomeView from &#39;../views/HomeView.vue&#39; const router = createRouter({ history: createWebHistory(import.meta.env.BASE_URL), routes: [ { path: &#39;/&#39;, name: &#39;home&#39;, component: HomeView, }, { path: &#39;/about&#39;, name: &#39;about&#39;, component: () =&gt; import(&#39;../views/AboutView.vue&#39;), }, { path: &#39;/game-list&#39;, name: &#39;game-list&#39;, component: () =&gt; import(&#39;../views/GameList.vue&#39;), }, { path: &#39;/add-game&#39;, name: &#39;add-game&#39;, component: () =&gt; import(&#39;../views/AddGame.vue&#39;), }, { path: &#39;/statistics&#39;, name: &#39;statistics&#39;, component: () =&gt; import(&#39;../views/Statistics.vue&#39;), }, { path: &#39;/game/:id&#39;, name: &#39;game-detail&#39;, component: () =&gt; import(&#39;../views/GameDetail.vue&#39;), }, ], }) export default router 核心数据类型\rGame接口\rexport interface Game { id?: number; date: string; color: &#39;black&#39; | &#39;white&#39;; opponent: string; result: &#39;win&#39; | &#39;loss&#39; | &#39;draw&#39;; sgf: string; createdAt: string; analysis?: { winRate: number[]; mistakes: { move: number; position: string; severity: number }[]; }; } 使用说明\r安装依赖\rnpm install 开发模式启动\rnpm run dev 构建生产版本\rnpm run build 预览生产版本\rnpm run preview 功能说明\r添加对局\r点击&quot;添加对局&quot;导航 选择SGF格式的对局文件 系统自动解析对局信息 确认信息无误后保存对局 查看对局列表\r点击&quot;对局列表&quot;导航 可根据结果和颜色进行筛选 列表显示对局的关键信息，包括日期、颜色、对手、手数、让子和结果 点击&quot;查看&quot;按钮进入对局详情 点击&quot;删除&quot;按钮删除对局 查看统计数据\r点击&quot;统计&quot;导航 查看总对局数、黑棋胜率和白棋胜率 查看胜率趋势图表 项目特点\r本地存储: 所有数据存储在浏览器的IndexedDB中，无需后端服务 SGF支持: 支持标准SGF格式的围棋对局文件导入和解析 数据可视化: 使用Chart.js提供胜率趋势图表 响应式设计: 适配不同屏幕尺寸 类型安全: 使用TypeScript确保代码质量和开发体验 扩展方向\r增加AI分析功能 添加对局复盘功能 支持多用户数据同步 添加更多统计图表和数据洞察 实现对局评论和笔记功能 ">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended">
+
+<aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
     
-    <title>基于Vue的棋局数据分析网页 | Kalev Yang</title>
-    <meta name="viewport" content="width=device-width,minimum-scale=1">
-    <meta name="description" content="围棋分析系统
-缘由
-从25年1月初开始学围棋，基本上在野狐围棋上对局。但是苦于野狐围棋并没有个人的黑棋白棋胜率及更多的分析数据，于是想自己实现一个基于Vue的棋局数据分析网页
-项目概述
-这是一个基于Vue 3构建的围棋对局分析系统，用于记录、管理和分析围棋对局。系统支持SGF文件导入、对局数据存储、胜率统计分析以及棋局详情查看等功能
-技术栈
+    <header>
+        
+            
+                <figure class="site-avatar hidden-post">
+                    <a href="/">
+                        
+                            
+                            
+                            
+                                
+                                <img src="/img/avatar_hu_b5976aa1afdc1d2e.png" width="300"
+                                    height="300" class="site-logo" loading="lazy" alt="Avatar">
+                            
+                        
+                    </a>
+                    
+                </figure>
+            
+        
 
-前端框架: Vue 3 &#43; Vite
-状态管理: Pinia
-路由管理: Vue Router
-数据可视化: Chart.js
-本地存储: IndexedDB (通过idb库)
-SGF解析: @sabaki/sgf
-语言: TypeScript
-构建工具: Vite
-
-项目结构
-├── src/
-│   ├── assets/           # 静态资源
-│   ├── components/       # 组件
-│   ├── lib/              # 工具函数库
-│   ├── router/           # 路由配置
-│   ├── stores/           # 状态管理
-│   ├── types/            # 类型定义
-│   ├── views/            # 页面组件
-│   ├── App.vue           # 应用根组件
-│   └── main.ts           # 入口文件
-├── public/               # 公共资源
-├── .vscode/              # VSCode配置
-├── tsconfig.json         # TypeScript配置
-├── vite.config.ts        # Vite配置
-└── package.json          # 项目依赖
-核心功能模块
-1. 数据存储模块
-
-使用IndexedDB存储对局数据
-提供完整的增删改查操作
-通过idb库简化IndexedDB操作
-
-2. SGF解析模块
-
-解析SGF格式的对局记录
-提取对局元数据（日期、对局者、结果等）
-提取手数、让子、贴目等信息
-
-3. 对局管理模块
-
-添加对局（支持SGF文件导入）
-查看对局列表和详情
-删除对局记录
-筛选和排序功能
-
-4. 数据统计模块
-
-计算并展示总对局数
-统计黑棋和白棋胜率
-展示胜率趋势图表
-
-关键文件说明
-1. 数据存储
-
-src/lib/db.ts: 数据库初始化和配置
-
-import { openDB } from &#39;idb&#39;;
-
-export const initDB = async () =&gt; {
-  return openDB(&#39;GoDB&#39;, 1, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains(&#39;games&#39;)) {
-        const store = db.createObjectStore(&#39;games&#39;, { keyPath: &#39;id&#39;, autoIncrement: true });
-        store.createIndex(&#39;date&#39;, &#39;date&#39;);
-        store.createIndex(&#39;color&#39;, &#39;color&#39;);
-        store.createIndex(&#39;result&#39;, &#39;result&#39;);
-      }
-    }
-  });
-};
-2. 状态管理
-
-src/stores/games.ts: 棋局数据的状态管理
-
-存储棋局列表
-提供数据计算（胜率、弱点分析等）
-封装数据库操作
-
-
-
-3. SGF解析
-
-src/lib/sgf.ts: SGF文件解析工具
-
-解析SGF字符串
-提取对局信息和手数
-
-
-
-4. 页面组件
-
-GameList.vue: 对局列表页面
-GameDetail.vue: 对局详情页面
-AddGame.vue: 添加对局页面
-Statistics.vue: 数据统计页面
-
-路由配置
-import { createRouter, createWebHistory } from &#39;vue-router&#39;
-import HomeView from &#39;../views/HomeView.vue&#39;
-
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: &#39;/&#39;,
-      name: &#39;home&#39;,
-      component: HomeView,
-    },
-    {
-      path: &#39;/about&#39;,
-      name: &#39;about&#39;,
-      component: () =&gt; import(&#39;../views/AboutView.vue&#39;),
-    },
-    {
-      path: &#39;/game-list&#39;,
-      name: &#39;game-list&#39;,
-      component: () =&gt; import(&#39;../views/GameList.vue&#39;),
-    },
-    {
-      path: &#39;/add-game&#39;,
-      name: &#39;add-game&#39;,
-      component: () =&gt; import(&#39;../views/AddGame.vue&#39;),
-    },
-    {
-      path: &#39;/statistics&#39;,
-      name: &#39;statistics&#39;,
-      component: () =&gt; import(&#39;../views/Statistics.vue&#39;),
-    },
-    {
-      path: &#39;/game/:id&#39;,
-      name: &#39;game-detail&#39;,
-      component: () =&gt; import(&#39;../views/GameDetail.vue&#39;),
-    },
-  ],
-})
-
-export default router
-核心数据类型
-Game接口
-export interface Game {
-  id?: number;
-  date: string;
-  color: &#39;black&#39; | &#39;white&#39;;
-  opponent: string;
-  result: &#39;win&#39; | &#39;loss&#39; | &#39;draw&#39;;
-  sgf: string;
-  createdAt: string;
-  analysis?: {
-    winRate: number[];
-    mistakes: { move: number; position: string; severity: number }[];
-  };
-}
-使用说明
-安装依赖
-npm install
-开发模式启动
-npm run dev
-构建生产版本
-npm run build
-预览生产版本
-npm run preview
-功能说明
-添加对局
-
-点击&quot;添加对局&quot;导航
-选择SGF格式的对局文件
-系统自动解析对局信息
-确认信息无误后保存对局
-
-查看对局列表
-
-点击&quot;对局列表&quot;导航
-可根据结果和颜色进行筛选
-列表显示对局的关键信息，包括日期、颜色、对手、手数、让子和结果
-点击&quot;查看&quot;按钮进入对局详情
-点击&quot;删除&quot;按钮删除对局
-
-查看统计数据
-
-点击&quot;统计&quot;导航
-查看总对局数、黑棋胜率和白棋胜率
-查看胜率趋势图表
-
-项目特点
-
-本地存储: 所有数据存储在浏览器的IndexedDB中，无需后端服务
-SGF支持: 支持标准SGF格式的围棋对局文件导入和解析
-数据可视化: 使用Chart.js提供胜率趋势图表
-响应式设计: 适配不同屏幕尺寸
-类型安全: 使用TypeScript确保代码质量和开发体验
-
-扩展方向
-
-增加AI分析功能
-添加对局复盘功能
-支持多用户数据同步
-添加更多统计图表和数据洞察
-实现对局评论和笔记功能
-">
-    <meta name="generator" content="Hugo 0.154.3">
-    
-    
-    
-      <meta name="robots" content="index, follow">
-    
-    
-
-    
-<link rel="stylesheet" href="/ananke/css/main.min.efe4d852f731d5d1fbb87718387202a97aafd768cdcdaed0662bbe6982e91824.css" >
-
-
-
-
-    
-
-
-    
-      
-
-    
-
-    
-
-    
-      <link rel="canonical" href="https://kalev-ovo.github.io/posts/%E5%9F%BA%E4%BA%8Evue%E7%9A%84%E6%A3%8B%E5%B1%80%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E7%BD%91%E9%A1%B5/">
-    
-
-    
-    
-    <meta property="og:url" content="https://kalev-ovo.github.io/posts/%E5%9F%BA%E4%BA%8Evue%E7%9A%84%E6%A3%8B%E5%B1%80%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E7%BD%91%E9%A1%B5/">
-  <meta property="og:site_name" content="Kalev Yang">
-  <meta property="og:title" content="基于Vue的棋局数据分析网页">
-  <meta property="og:description" content="围棋分析系统 缘由 从25年1月初开始学围棋，基本上在野狐围棋上对局。但是苦于野狐围棋并没有个人的黑棋白棋胜率及更多的分析数据，于是想自己实现一个基于Vue的棋局数据分析网页
-项目概述 这是一个基于Vue 3构建的围棋对局分析系统，用于记录、管理和分析围棋对局。系统支持SGF文件导入、对局数据存储、胜率统计分析以及棋局详情查看等功能
-技术栈 前端框架: Vue 3 &#43; Vite 状态管理: Pinia 路由管理: Vue Router 数据可视化: Chart.js 本地存储: IndexedDB (通过idb库) SGF解析: @sabaki/sgf 语言: TypeScript 构建工具: Vite 项目结构 ├── src/ │ ├── assets/ # 静态资源 │ ├── components/ # 组件 │ ├── lib/ # 工具函数库 │ ├── router/ # 路由配置 │ ├── stores/ # 状态管理 │ ├── types/ # 类型定义 │ ├── views/ # 页面组件 │ ├── App.vue # 应用根组件 │ └── main.ts # 入口文件 ├── public/ # 公共资源 ├── .vscode/ # VSCode配置 ├── tsconfig.json # TypeScript配置 ├── vite.config.ts # Vite配置 └── package.json # 项目依赖 核心功能模块 1. 数据存储模块 使用IndexedDB存储对局数据 提供完整的增删改查操作 通过idb库简化IndexedDB操作 2. SGF解析模块 解析SGF格式的对局记录 提取对局元数据（日期、对局者、结果等） 提取手数、让子、贴目等信息 3. 对局管理模块 添加对局（支持SGF文件导入） 查看对局列表和详情 删除对局记录 筛选和排序功能 4. 数据统计模块 计算并展示总对局数 统计黑棋和白棋胜率 展示胜率趋势图表 关键文件说明 1. 数据存储 src/lib/db.ts: 数据库初始化和配置 import { openDB } from &#39;idb&#39;; export const initDB = async () =&gt; { return openDB(&#39;GoDB&#39;, 1, { upgrade(db) { if (!db.objectStoreNames.contains(&#39;games&#39;)) { const store = db.createObjectStore(&#39;games&#39;, { keyPath: &#39;id&#39;, autoIncrement: true }); store.createIndex(&#39;date&#39;, &#39;date&#39;); store.createIndex(&#39;color&#39;, &#39;color&#39;); store.createIndex(&#39;result&#39;, &#39;result&#39;); } } }); }; 2. 状态管理 src/stores/games.ts: 棋局数据的状态管理 存储棋局列表 提供数据计算（胜率、弱点分析等） 封装数据库操作 3. SGF解析 src/lib/sgf.ts: SGF文件解析工具 解析SGF字符串 提取对局信息和手数 4. 页面组件 GameList.vue: 对局列表页面 GameDetail.vue: 对局详情页面 AddGame.vue: 添加对局页面 Statistics.vue: 数据统计页面 路由配置 import { createRouter, createWebHistory } from &#39;vue-router&#39; import HomeView from &#39;../views/HomeView.vue&#39; const router = createRouter({ history: createWebHistory(import.meta.env.BASE_URL), routes: [ { path: &#39;/&#39;, name: &#39;home&#39;, component: HomeView, }, { path: &#39;/about&#39;, name: &#39;about&#39;, component: () =&gt; import(&#39;../views/AboutView.vue&#39;), }, { path: &#39;/game-list&#39;, name: &#39;game-list&#39;, component: () =&gt; import(&#39;../views/GameList.vue&#39;), }, { path: &#39;/add-game&#39;, name: &#39;add-game&#39;, component: () =&gt; import(&#39;../views/AddGame.vue&#39;), }, { path: &#39;/statistics&#39;, name: &#39;statistics&#39;, component: () =&gt; import(&#39;../views/Statistics.vue&#39;), }, { path: &#39;/game/:id&#39;, name: &#39;game-detail&#39;, component: () =&gt; import(&#39;../views/GameDetail.vue&#39;), }, ], }) export default router 核心数据类型 Game接口 export interface Game { id?: number; date: string; color: &#39;black&#39; | &#39;white&#39;; opponent: string; result: &#39;win&#39; | &#39;loss&#39; | &#39;draw&#39;; sgf: string; createdAt: string; analysis?: { winRate: number[]; mistakes: { move: number; position: string; severity: number }[]; }; } 使用说明 安装依赖 npm install 开发模式启动 npm run dev 构建生产版本 npm run build 预览生产版本 npm run preview 功能说明 添加对局 点击&#34;添加对局&#34;导航 选择SGF格式的对局文件 系统自动解析对局信息 确认信息无误后保存对局 查看对局列表 点击&#34;对局列表&#34;导航 可根据结果和颜色进行筛选 列表显示对局的关键信息，包括日期、颜色、对手、手数、让子和结果 点击&#34;查看&#34;按钮进入对局详情 点击&#34;删除&#34;按钮删除对局 查看统计数据 点击&#34;统计&#34;导航 查看总对局数、黑棋胜率和白棋胜率 查看胜率趋势图表 项目特点 本地存储: 所有数据存储在浏览器的IndexedDB中，无需后端服务 SGF支持: 支持标准SGF格式的围棋对局文件导入和解析 数据可视化: 使用Chart.js提供胜率趋势图表 响应式设计: 适配不同屏幕尺寸 类型安全: 使用TypeScript确保代码质量和开发体验 扩展方向 增加AI分析功能 添加对局复盘功能 支持多用户数据同步 添加更多统计图表和数据洞察 实现对局评论和笔记功能">
-  <meta property="og:locale" content="zh_CN">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2025-10-28T16:25:41+00:00">
-    <meta property="article:modified_time" content="2025-10-28T16:25:41+00:00">
-    <meta property="article:tag" content="Vue">
-    <meta property="article:tag" content="棋局数据分析">
-    <meta property="article:tag" content="前端开发">
-
-  <meta itemprop="name" content="基于Vue的棋局数据分析网页">
-  <meta itemprop="description" content="围棋分析系统 缘由 从25年1月初开始学围棋，基本上在野狐围棋上对局。但是苦于野狐围棋并没有个人的黑棋白棋胜率及更多的分析数据，于是想自己实现一个基于Vue的棋局数据分析网页
-项目概述 这是一个基于Vue 3构建的围棋对局分析系统，用于记录、管理和分析围棋对局。系统支持SGF文件导入、对局数据存储、胜率统计分析以及棋局详情查看等功能
-技术栈 前端框架: Vue 3 &#43; Vite 状态管理: Pinia 路由管理: Vue Router 数据可视化: Chart.js 本地存储: IndexedDB (通过idb库) SGF解析: @sabaki/sgf 语言: TypeScript 构建工具: Vite 项目结构 ├── src/ │ ├── assets/ # 静态资源 │ ├── components/ # 组件 │ ├── lib/ # 工具函数库 │ ├── router/ # 路由配置 │ ├── stores/ # 状态管理 │ ├── types/ # 类型定义 │ ├── views/ # 页面组件 │ ├── App.vue # 应用根组件 │ └── main.ts # 入口文件 ├── public/ # 公共资源 ├── .vscode/ # VSCode配置 ├── tsconfig.json # TypeScript配置 ├── vite.config.ts # Vite配置 └── package.json # 项目依赖 核心功能模块 1. 数据存储模块 使用IndexedDB存储对局数据 提供完整的增删改查操作 通过idb库简化IndexedDB操作 2. SGF解析模块 解析SGF格式的对局记录 提取对局元数据（日期、对局者、结果等） 提取手数、让子、贴目等信息 3. 对局管理模块 添加对局（支持SGF文件导入） 查看对局列表和详情 删除对局记录 筛选和排序功能 4. 数据统计模块 计算并展示总对局数 统计黑棋和白棋胜率 展示胜率趋势图表 关键文件说明 1. 数据存储 src/lib/db.ts: 数据库初始化和配置 import { openDB } from &#39;idb&#39;; export const initDB = async () =&gt; { return openDB(&#39;GoDB&#39;, 1, { upgrade(db) { if (!db.objectStoreNames.contains(&#39;games&#39;)) { const store = db.createObjectStore(&#39;games&#39;, { keyPath: &#39;id&#39;, autoIncrement: true }); store.createIndex(&#39;date&#39;, &#39;date&#39;); store.createIndex(&#39;color&#39;, &#39;color&#39;); store.createIndex(&#39;result&#39;, &#39;result&#39;); } } }); }; 2. 状态管理 src/stores/games.ts: 棋局数据的状态管理 存储棋局列表 提供数据计算（胜率、弱点分析等） 封装数据库操作 3. SGF解析 src/lib/sgf.ts: SGF文件解析工具 解析SGF字符串 提取对局信息和手数 4. 页面组件 GameList.vue: 对局列表页面 GameDetail.vue: 对局详情页面 AddGame.vue: 添加对局页面 Statistics.vue: 数据统计页面 路由配置 import { createRouter, createWebHistory } from &#39;vue-router&#39; import HomeView from &#39;../views/HomeView.vue&#39; const router = createRouter({ history: createWebHistory(import.meta.env.BASE_URL), routes: [ { path: &#39;/&#39;, name: &#39;home&#39;, component: HomeView, }, { path: &#39;/about&#39;, name: &#39;about&#39;, component: () =&gt; import(&#39;../views/AboutView.vue&#39;), }, { path: &#39;/game-list&#39;, name: &#39;game-list&#39;, component: () =&gt; import(&#39;../views/GameList.vue&#39;), }, { path: &#39;/add-game&#39;, name: &#39;add-game&#39;, component: () =&gt; import(&#39;../views/AddGame.vue&#39;), }, { path: &#39;/statistics&#39;, name: &#39;statistics&#39;, component: () =&gt; import(&#39;../views/Statistics.vue&#39;), }, { path: &#39;/game/:id&#39;, name: &#39;game-detail&#39;, component: () =&gt; import(&#39;../views/GameDetail.vue&#39;), }, ], }) export default router 核心数据类型 Game接口 export interface Game { id?: number; date: string; color: &#39;black&#39; | &#39;white&#39;; opponent: string; result: &#39;win&#39; | &#39;loss&#39; | &#39;draw&#39;; sgf: string; createdAt: string; analysis?: { winRate: number[]; mistakes: { move: number; position: string; severity: number }[]; }; } 使用说明 安装依赖 npm install 开发模式启动 npm run dev 构建生产版本 npm run build 预览生产版本 npm run preview 功能说明 添加对局 点击&#34;添加对局&#34;导航 选择SGF格式的对局文件 系统自动解析对局信息 确认信息无误后保存对局 查看对局列表 点击&#34;对局列表&#34;导航 可根据结果和颜色进行筛选 列表显示对局的关键信息，包括日期、颜色、对手、手数、让子和结果 点击&#34;查看&#34;按钮进入对局详情 点击&#34;删除&#34;按钮删除对局 查看统计数据 点击&#34;统计&#34;导航 查看总对局数、黑棋胜率和白棋胜率 查看胜率趋势图表 项目特点 本地存储: 所有数据存储在浏览器的IndexedDB中，无需后端服务 SGF支持: 支持标准SGF格式的围棋对局文件导入和解析 数据可视化: 使用Chart.js提供胜率趋势图表 响应式设计: 适配不同屏幕尺寸 类型安全: 使用TypeScript确保代码质量和开发体验 扩展方向 增加AI分析功能 添加对局复盘功能 支持多用户数据同步 添加更多统计图表和数据洞察 实现对局评论和笔记功能">
-  <meta itemprop="datePublished" content="2025-10-28T16:25:41+00:00">
-  <meta itemprop="dateModified" content="2025-10-28T16:25:41+00:00">
-  <meta itemprop="wordCount" content="362">
-  <meta itemprop="keywords" content="Vue,棋局数据分析,前端开发">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="基于Vue的棋局数据分析网页">
-  <meta name="twitter:description" content="围棋分析系统 缘由 从25年1月初开始学围棋，基本上在野狐围棋上对局。但是苦于野狐围棋并没有个人的黑棋白棋胜率及更多的分析数据，于是想自己实现一个基于Vue的棋局数据分析网页
-项目概述 这是一个基于Vue 3构建的围棋对局分析系统，用于记录、管理和分析围棋对局。系统支持SGF文件导入、对局数据存储、胜率统计分析以及棋局详情查看等功能
-技术栈 前端框架: Vue 3 &#43; Vite 状态管理: Pinia 路由管理: Vue Router 数据可视化: Chart.js 本地存储: IndexedDB (通过idb库) SGF解析: @sabaki/sgf 语言: TypeScript 构建工具: Vite 项目结构 ├── src/ │ ├── assets/ # 静态资源 │ ├── components/ # 组件 │ ├── lib/ # 工具函数库 │ ├── router/ # 路由配置 │ ├── stores/ # 状态管理 │ ├── types/ # 类型定义 │ ├── views/ # 页面组件 │ ├── App.vue # 应用根组件 │ └── main.ts # 入口文件 ├── public/ # 公共资源 ├── .vscode/ # VSCode配置 ├── tsconfig.json # TypeScript配置 ├── vite.config.ts # Vite配置 └── package.json # 项目依赖 核心功能模块 1. 数据存储模块 使用IndexedDB存储对局数据 提供完整的增删改查操作 通过idb库简化IndexedDB操作 2. SGF解析模块 解析SGF格式的对局记录 提取对局元数据（日期、对局者、结果等） 提取手数、让子、贴目等信息 3. 对局管理模块 添加对局（支持SGF文件导入） 查看对局列表和详情 删除对局记录 筛选和排序功能 4. 数据统计模块 计算并展示总对局数 统计黑棋和白棋胜率 展示胜率趋势图表 关键文件说明 1. 数据存储 src/lib/db.ts: 数据库初始化和配置 import { openDB } from &#39;idb&#39;; export const initDB = async () =&gt; { return openDB(&#39;GoDB&#39;, 1, { upgrade(db) { if (!db.objectStoreNames.contains(&#39;games&#39;)) { const store = db.createObjectStore(&#39;games&#39;, { keyPath: &#39;id&#39;, autoIncrement: true }); store.createIndex(&#39;date&#39;, &#39;date&#39;); store.createIndex(&#39;color&#39;, &#39;color&#39;); store.createIndex(&#39;result&#39;, &#39;result&#39;); } } }); }; 2. 状态管理 src/stores/games.ts: 棋局数据的状态管理 存储棋局列表 提供数据计算（胜率、弱点分析等） 封装数据库操作 3. SGF解析 src/lib/sgf.ts: SGF文件解析工具 解析SGF字符串 提取对局信息和手数 4. 页面组件 GameList.vue: 对局列表页面 GameDetail.vue: 对局详情页面 AddGame.vue: 添加对局页面 Statistics.vue: 数据统计页面 路由配置 import { createRouter, createWebHistory } from &#39;vue-router&#39; import HomeView from &#39;../views/HomeView.vue&#39; const router = createRouter({ history: createWebHistory(import.meta.env.BASE_URL), routes: [ { path: &#39;/&#39;, name: &#39;home&#39;, component: HomeView, }, { path: &#39;/about&#39;, name: &#39;about&#39;, component: () =&gt; import(&#39;../views/AboutView.vue&#39;), }, { path: &#39;/game-list&#39;, name: &#39;game-list&#39;, component: () =&gt; import(&#39;../views/GameList.vue&#39;), }, { path: &#39;/add-game&#39;, name: &#39;add-game&#39;, component: () =&gt; import(&#39;../views/AddGame.vue&#39;), }, { path: &#39;/statistics&#39;, name: &#39;statistics&#39;, component: () =&gt; import(&#39;../views/Statistics.vue&#39;), }, { path: &#39;/game/:id&#39;, name: &#39;game-detail&#39;, component: () =&gt; import(&#39;../views/GameDetail.vue&#39;), }, ], }) export default router 核心数据类型 Game接口 export interface Game { id?: number; date: string; color: &#39;black&#39; | &#39;white&#39;; opponent: string; result: &#39;win&#39; | &#39;loss&#39; | &#39;draw&#39;; sgf: string; createdAt: string; analysis?: { winRate: number[]; mistakes: { move: number; position: string; severity: number }[]; }; } 使用说明 安装依赖 npm install 开发模式启动 npm run dev 构建生产版本 npm run build 预览生产版本 npm run preview 功能说明 添加对局 点击&#34;添加对局&#34;导航 选择SGF格式的对局文件 系统自动解析对局信息 确认信息无误后保存对局 查看对局列表 点击&#34;对局列表&#34;导航 可根据结果和颜色进行筛选 列表显示对局的关键信息，包括日期、颜色、对手、手数、让子和结果 点击&#34;查看&#34;按钮进入对局详情 点击&#34;删除&#34;按钮删除对局 查看统计数据 点击&#34;统计&#34;导航 查看总对局数、黑棋胜率和白棋胜率 查看胜率趋势图表 项目特点 本地存储: 所有数据存储在浏览器的IndexedDB中，无需后端服务 SGF支持: 支持标准SGF格式的围棋对局文件导入和解析 数据可视化: 使用Chart.js提供胜率趋势图表 响应式设计: 适配不同屏幕尺寸 类型安全: 使用TypeScript确保代码质量和开发体验 扩展方向 增加AI分析功能 添加对局复盘功能 支持多用户数据同步 添加更多统计图表和数据洞察 实现对局评论和笔记功能">
-
-      
-      
-    
-	
-  </head><body class="ma0 avenir bg-near-white production">
-
-    
-   
-  
-
-  <header>
-    <div class="bg-black">
-      <nav class="pv3 ph3 ph4-ns" role="navigation">
-  <div class="flex-l center items-center justify-between">
-    <a href="/" class="f3 fw2 hover-white white-90 dib no-underline">
-      
-        Kalev Yang
-      
-    </a>
-    <div class="flex-l items-center">
-      
-
-      
-      <div class="ananke-socials"></div>
-
-    </div>
-  </div>
-</nav>
-
-    </div>
-  </header>
-
-
-
-    <main class="pb7" role="main">
-      
-  
-  <article class="flex-l mw7 center ph3 flex-wrap justify-between">
-    <header class="mt4 w-100">
-      <aside class="instapaper_ignoref b helvetica tracked ttu">
-          
-        Posts
-      </aside><div id="sharing" class="mt3 ananke-socials"></div>
-<h1 class="f1 athelas mt3 mb1">基于Vue的棋局数据分析网页</h1>
-      
-      
-      
-      <time class="f6 mv4 dib tracked" datetime="2025-10-28T16:25:41Z">October 28, 2025</time>
-      
-
-      
-      
+        <div class="site-meta">
+            <h1 class="site-name hidden-post"><a href="/">Kalev Yang</a></h1>
+            <h2 class="site-description hidden-post"></h2>
+        </div>
     </header>
-    <div class="nested-copy-line-height lh-copy serif f4 nested-links mid-gray pr4-l w-100-l"><h1 id="围棋分析系统">围棋分析系统</h1>
-<h2 id="缘由">缘由</h2>
-<p>从25年1月初开始学围棋，基本上在野狐围棋上对局。但是苦于野狐围棋并没有个人的黑棋白棋胜率及更多的分析数据，于是想自己实现一个基于Vue的棋局数据分析网页</p>
-<h2 id="项目概述">项目概述</h2>
-<p>这是一个基于Vue 3构建的围棋对局分析系统，用于记录、管理和分析围棋对局。系统支持SGF文件导入、对局数据存储、胜率统计分析以及棋局详情查看等功能</p>
-<h2 id="技术栈">技术栈</h2>
-<ul>
+
+    <ol class="menu" id="main-menu">
+        
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <span class="hidden-post">首页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about' >
+                
+                
+                
+                    <span class="hidden-post">关于</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span class="hidden-post">暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+<style>
+     
+    .hidden-post {
+        display: block;
+    }
+
+     
+    @media (min-width: 768px) {
+        
+    }
+
+     
+    @media (max-width: 767px) {
+        .hidden-post {
+            display: block !important;
+        }
+        #back-button {
+            display: none;
+        }
+    }
+</style>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    
+    <button id="toggle-toc" class="mobile-only">Toc</button>
+    <section class="widget archives" id="toc-container">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#缘由">缘由</a></li>
+    <li><a href="#项目概述">项目概述</a></li>
+    <li><a href="#技术栈">技术栈</a></li>
+    <li><a href="#项目结构">项目结构</a></li>
+    <li><a href="#核心功能模块">核心功能模块</a>
+      <ul>
+        <li><a href="#1-数据存储模块">1. 数据存储模块</a></li>
+        <li><a href="#2-sgf解析模块">2. SGF解析模块</a></li>
+        <li><a href="#3-对局管理模块">3. 对局管理模块</a></li>
+        <li><a href="#4-数据统计模块">4. 数据统计模块</a></li>
+      </ul>
+    </li>
+    <li><a href="#关键文件说明">关键文件说明</a>
+      <ul>
+        <li><a href="#1-数据存储">1. 数据存储</a></li>
+        <li><a href="#2-状态管理">2. 状态管理</a></li>
+        <li><a href="#3-sgf解析">3. SGF解析</a></li>
+        <li><a href="#4-页面组件">4. 页面组件</a></li>
+      </ul>
+    </li>
+    <li><a href="#路由配置">路由配置</a></li>
+    <li><a href="#核心数据类型">核心数据类型</a>
+      <ul>
+        <li><a href="#game接口">Game接口</a></li>
+      </ul>
+    </li>
+    <li><a href="#使用说明">使用说明</a>
+      <ul>
+        <li><a href="#安装依赖">安装依赖</a></li>
+        <li><a href="#开发模式启动">开发模式启动</a></li>
+        <li><a href="#构建生产版本">构建生产版本</a></li>
+        <li><a href="#预览生产版本">预览生产版本</a></li>
+      </ul>
+    </li>
+    <li><a href="#功能说明">功能说明</a>
+      <ul>
+        <li><a href="#添加对局">添加对局</a></li>
+        <li><a href="#查看对局列表">查看对局列表</a></li>
+        <li><a href="#查看统计数据">查看统计数据</a></li>
+      </ul>
+    </li>
+    <li><a href="#项目特点">项目特点</a></li>
+    <li><a href="#扩展方向">扩展方向</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+
+<style>
+    .container {
+        .right-sidebar {
+             
+            display: flex;
+        }
+    }
+
+     
+    .mobile-only {
+        display: none !important;
+    }
+
+    #toc-container {
+         
+         
+        position: fixed;
+         
+        bottom: 21%;
+         
+        right: 60px;
+         
+        background-color: var(--card-background);
+         
+        padding: 10px;
+         
+        border: 1px solid #96979a50;
+        border-radius: var(--card-border-radius);
+         
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+         
+        z-index: 9998 !important;
+         
+        max-height: 75vh;
+        overflow-y: auto;
+         
+        width: auto;
+        max-width: 290px;
+    }
+
+    #toggle-toc {
+        position: fixed;
+        bottom: 22%;
+        right: 20px;
+        padding: 10px 10px;
+        z-index: 9998 !important;
+        border: 0px solid #96979a50;
+        border-radius: 7px;
+        box-shadow: var(--shadow-l1);
+        background-color: #00640010;
+        color: #34495e;
+         
+        display: none;  
+        margin-bottom: -20px;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+
+    .widget--toc #TableOfContents {
+        overflow-x: auto;
+        max-height: 66vh;
+        width: auto;
+    }
+
+    @media screen and (max-width: 768px) {
+        .mobile-only {
+            display: block !important;  
+        }
+
+        #toc-container {
+            display: none;  
+        }
+
+        #toggle-toc {
+            display: block;  
+            bottom: 100px;  
+        }
+    }
+
+     
+    @media screen and (min-width: 769px) {
+        #toc-container {
+            display: block !important;  
+            position: static;  
+            border: none;  
+            box-shadow: none;  
+            max-height: none;  
+            overflow-y: visible;  
+            margin-top: 20px;  
+            right: auto;  
+            bottom: auto;  
+            width: auto;  
+            max-width: 100%;  
+            background-color: transparent;  
+            padding: 0;  
+        }
+
+        #toggle-toc {
+            display: none !important;  
+        }
+    }
+</style>
+<script>
+    var toggleButton = document.getElementById('toggle-toc');
+    var tocContainer = document.getElementById('toc-container');
+
+    
+    toggleButton.addEventListener('click', function() {
+        if (tocContainer.style.display === 'none' || tocContainer.style.display === '') {
+            tocContainer.style.display = 'block';
+        } else {
+            tocContainer.style.display = 'none';
+        }
+    });
+
+    
+    toggleButton.addEventListener('mouseover', function() {
+        
+            tocContainer.style.display = 'block';
+        
+    });
+
+    
+    document.addEventListener('click', function(event) {
+        
+            
+            if (!tocContainer.contains(event.target) && event.target !== toggleButton) {
+                
+                tocContainer.style.display = 'none';
+            }
+        
+    });
+</script>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/%E5%9F%BA%E4%BA%8Evue%E7%9A%84%E6%A3%8B%E5%B1%80%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E7%BD%91%E9%A1%B5/">基于Vue的棋局数据分析网页</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2025-10-28T16:25:41Z'>Oct 28, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 2 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="围棋分析系统">围棋分析系统
+</h1><h2 id="缘由">缘由
+</h2><p>从25年1月初开始学围棋，基本上在野狐围棋上对局。但是苦于野狐围棋并没有个人的黑棋白棋胜率及更多的分析数据，于是想自己实现一个基于Vue的棋局数据分析网页</p>
+<h2 id="项目概述">项目概述
+</h2><p>这是一个基于Vue 3构建的围棋对局分析系统，用于记录、管理和分析围棋对局。系统支持SGF文件导入、对局数据存储、胜率统计分析以及棋局详情查看等功能</p>
+<h2 id="技术栈">技术栈
+</h2><ul>
 <li><strong>前端框架</strong>: Vue 3 + Vite</li>
 <li><strong>状态管理</strong>: Pinia</li>
 <li><strong>路由管理</strong>: Vue Router</li>
@@ -340,8 +438,8 @@ SGF支持: 支持标准SGF格式的围棋对局文件导入和解析
 <li><strong>语言</strong>: TypeScript</li>
 <li><strong>构建工具</strong>: Vite</li>
 </ul>
-<h2 id="项目结构">项目结构</h2>
-<pre tabindex="0"><code>├── src/
+<h2 id="项目结构">项目结构
+</h2><pre tabindex="0"><code>├── src/
 │   ├── assets/           # 静态资源
 │   ├── components/       # 组件
 │   ├── lib/              # 工具函数库
@@ -356,35 +454,35 @@ SGF支持: 支持标准SGF格式的围棋对局文件导入和解析
 ├── tsconfig.json         # TypeScript配置
 ├── vite.config.ts        # Vite配置
 └── package.json          # 项目依赖
-</code></pre><h2 id="核心功能模块">核心功能模块</h2>
-<h3 id="1-数据存储模块">1. 数据存储模块</h3>
-<ul>
+</code></pre><h2 id="核心功能模块">核心功能模块
+</h2><h3 id="1-数据存储模块">1. 数据存储模块
+</h3><ul>
 <li>使用IndexedDB存储对局数据</li>
 <li>提供完整的增删改查操作</li>
 <li>通过idb库简化IndexedDB操作</li>
 </ul>
-<h3 id="2-sgf解析模块">2. SGF解析模块</h3>
-<ul>
+<h3 id="2-sgf解析模块">2. SGF解析模块
+</h3><ul>
 <li>解析SGF格式的对局记录</li>
 <li>提取对局元数据（日期、对局者、结果等）</li>
 <li>提取手数、让子、贴目等信息</li>
 </ul>
-<h3 id="3-对局管理模块">3. 对局管理模块</h3>
-<ul>
+<h3 id="3-对局管理模块">3. 对局管理模块
+</h3><ul>
 <li>添加对局（支持SGF文件导入）</li>
 <li>查看对局列表和详情</li>
 <li>删除对局记录</li>
 <li>筛选和排序功能</li>
 </ul>
-<h3 id="4-数据统计模块">4. 数据统计模块</h3>
-<ul>
+<h3 id="4-数据统计模块">4. 数据统计模块
+</h3><ul>
 <li>计算并展示总对局数</li>
 <li>统计黑棋和白棋胜率</li>
 <li>展示胜率趋势图表</li>
 </ul>
-<h2 id="关键文件说明">关键文件说明</h2>
-<h3 id="1-数据存储">1. 数据存储</h3>
-<ul>
+<h2 id="关键文件说明">关键文件说明
+</h2><h3 id="1-数据存储">1. 数据存储
+</h3><ul>
 <li><strong>src/lib/db.ts</strong>: 数据库初始化和配置</li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">openDB</span> } <span style="color:#66d9ef">from</span> <span style="color:#e6db74">&#39;idb&#39;</span>;
@@ -401,8 +499,8 @@ SGF支持: 支持标准SGF格式的围棋对局文件导入和解析
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>  });
 </span></span><span style="display:flex;"><span>};
-</span></span></code></pre></div><h3 id="2-状态管理">2. 状态管理</h3>
-<ul>
+</span></span></code></pre></div><h3 id="2-状态管理">2. 状态管理
+</h3><ul>
 <li><strong>src/stores/games.ts</strong>: 棋局数据的状态管理
 <ul>
 <li>存储棋局列表</li>
@@ -411,8 +509,8 @@ SGF支持: 支持标准SGF格式的围棋对局文件导入和解析
 </ul>
 </li>
 </ul>
-<h3 id="3-sgf解析">3. SGF解析</h3>
-<ul>
+<h3 id="3-sgf解析">3. SGF解析
+</h3><ul>
 <li><strong>src/lib/sgf.ts</strong>: SGF文件解析工具
 <ul>
 <li>解析SGF字符串</li>
@@ -420,15 +518,15 @@ SGF支持: 支持标准SGF格式的围棋对局文件导入和解析
 </ul>
 </li>
 </ul>
-<h3 id="4-页面组件">4. 页面组件</h3>
-<ul>
+<h3 id="4-页面组件">4. 页面组件
+</h3><ul>
 <li><strong>GameList.vue</strong>: 对局列表页面</li>
 <li><strong>GameDetail.vue</strong>: 对局详情页面</li>
 <li><strong>AddGame.vue</strong>: 添加对局页面</li>
 <li><strong>Statistics.vue</strong>: 数据统计页面</li>
 </ul>
-<h2 id="路由配置">路由配置</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">createRouter</span>, <span style="color:#a6e22e">createWebHistory</span> } <span style="color:#66d9ef">from</span> <span style="color:#e6db74">&#39;vue-router&#39;</span>
+<h2 id="路由配置">路由配置
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">createRouter</span>, <span style="color:#a6e22e">createWebHistory</span> } <span style="color:#66d9ef">from</span> <span style="color:#e6db74">&#39;vue-router&#39;</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">HomeView</span> <span style="color:#66d9ef">from</span> <span style="color:#e6db74">&#39;../views/HomeView.vue&#39;</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">router</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">createRouter</span>({
@@ -468,9 +566,9 @@ SGF支持: 支持标准SGF格式的围棋对局文件导入和解析
 </span></span><span style="display:flex;"><span>})
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">router</span>
-</span></span></code></pre></div><h2 id="核心数据类型">核心数据类型</h2>
-<h3 id="game接口">Game接口</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Game</span> {
+</span></span></code></pre></div><h2 id="核心数据类型">核心数据类型
+</h2><h3 id="game接口">Game接口
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Game</span> {
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">id?</span>: <span style="color:#66d9ef">number</span>;
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">date</span>: <span style="color:#66d9ef">string</span>;
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">color</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;black&#39;</span> <span style="color:#f92672">|</span> <span style="color:#e6db74">&#39;white&#39;</span>;
@@ -483,84 +581,202 @@ SGF支持: 支持标准SGF格式的围棋对局文件导入和解析
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mistakes</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">move</span>: <span style="color:#66d9ef">number</span>; <span style="color:#a6e22e">position</span>: <span style="color:#66d9ef">string</span>; <span style="color:#a6e22e">severity</span>: <span style="color:#66d9ef">number</span> }[];
 </span></span><span style="display:flex;"><span>  };
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h2 id="使用说明">使用说明</h2>
-<h3 id="安装依赖">安装依赖</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm install
-</span></span></code></pre></div><h3 id="开发模式启动">开发模式启动</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm run dev
-</span></span></code></pre></div><h3 id="构建生产版本">构建生产版本</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm run build
-</span></span></code></pre></div><h3 id="预览生产版本">预览生产版本</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm run preview
-</span></span></code></pre></div><h2 id="功能说明">功能说明</h2>
-<h3 id="添加对局">添加对局</h3>
-<ol>
+</span></span></code></pre></div><h2 id="使用说明">使用说明
+</h2><h3 id="安装依赖">安装依赖
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm install
+</span></span></code></pre></div><h3 id="开发模式启动">开发模式启动
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm run dev
+</span></span></code></pre></div><h3 id="构建生产版本">构建生产版本
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm run build
+</span></span></code></pre></div><h3 id="预览生产版本">预览生产版本
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm run preview
+</span></span></code></pre></div><h2 id="功能说明">功能说明
+</h2><h3 id="添加对局">添加对局
+</h3><ol>
 <li>点击&quot;添加对局&quot;导航</li>
 <li>选择SGF格式的对局文件</li>
 <li>系统自动解析对局信息</li>
 <li>确认信息无误后保存对局</li>
 </ol>
-<h3 id="查看对局列表">查看对局列表</h3>
-<ol>
+<h3 id="查看对局列表">查看对局列表
+</h3><ol>
 <li>点击&quot;对局列表&quot;导航</li>
 <li>可根据结果和颜色进行筛选</li>
 <li>列表显示对局的关键信息，包括日期、颜色、对手、手数、让子和结果</li>
 <li>点击&quot;查看&quot;按钮进入对局详情</li>
 <li>点击&quot;删除&quot;按钮删除对局</li>
 </ol>
-<h3 id="查看统计数据">查看统计数据</h3>
-<ol>
+<h3 id="查看统计数据">查看统计数据
+</h3><ol>
 <li>点击&quot;统计&quot;导航</li>
 <li>查看总对局数、黑棋胜率和白棋胜率</li>
 <li>查看胜率趋势图表</li>
 </ol>
-<h2 id="项目特点">项目特点</h2>
-<ol>
+<h2 id="项目特点">项目特点
+</h2><ol>
 <li><strong>本地存储</strong>: 所有数据存储在浏览器的IndexedDB中，无需后端服务</li>
 <li><strong>SGF支持</strong>: 支持标准SGF格式的围棋对局文件导入和解析</li>
 <li><strong>数据可视化</strong>: 使用Chart.js提供胜率趋势图表</li>
 <li><strong>响应式设计</strong>: 适配不同屏幕尺寸</li>
 <li><strong>类型安全</strong>: 使用TypeScript确保代码质量和开发体验</li>
 </ol>
-<h2 id="扩展方向">扩展方向</h2>
-<ol>
+<h2 id="扩展方向">扩展方向
+</h2><ol>
 <li>增加AI分析功能</li>
 <li>添加对局复盘功能</li>
 <li>支持多用户数据同步</li>
 <li>添加更多统计图表和数据洞察</li>
 <li>实现对局评论和笔记功能</li>
 </ol>
-<ul class="pa0">
-  
-   <li class="list di">
-     <a href="/tags/vue/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Vue</a>
-   </li>
-  
-   <li class="list di">
-     <a href="/tags/%E6%A3%8B%E5%B1%80%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">棋局数据分析</a>
-   </li>
-  
-   <li class="list di">
-     <a href="/tags/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">前端开发</a>
-   </li>
-  
-</ul>
-<div class="mt6 instapaper_ignoref">
-      
-      
-      </div>
-    </div></article>
 
-    </main>
-    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
-  <div class="flex justify-between">
-  <a class="f4 fw4 hover-white white-70 dn dib-ns pv2 ph3 no-underline" href="https://kalev-ovo.github.io/" >
-    &copy;  Kalev Yang 2026 
-  </a>
-    <div><div class="ananke-socials"></div>
-</div>
-  </div>
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/vue/">Vue</a>
+        
+            <a href="/tags/%E6%A3%8B%E5%B1%80%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/">棋局数据分析</a>
+        
+            <a href="/tags/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/">前端开发</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+        <div class="pre-next">
+            
+            
+                <a class="pre-next-btn bg" href="https://kalev-ovo.github.io/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5spaceship-titanic%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0/">神经网络实践：Spaceship Titanic预测模型优化笔记 >></a>
+            
+        </div>
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 Kalev Yang
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
 </footer>
 
-  </body>
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
 </html>
