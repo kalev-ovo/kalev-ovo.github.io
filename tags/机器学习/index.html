@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Kalev Yang</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.154.3">
+    
+    
+    
+      <meta name="robots" content="index, follow">
+    
+    
+
+    
+<link rel="stylesheet" href="/ananke/css/main.min.efe4d852f731d5d1fbb87718387202a97aafd768cdcdaed0662bbe6982e91824.css" >
+
+
+
+
+    
+
+
+    
+      
+
+    
+
+    
+    
+      <link href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/index.xml" rel="alternate" type="application/rss+xml" title="Kalev Yang" />
+      <link href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/index.xml" rel="feed" type="application/rss+xml" title="Kalev Yang" />
+      
+    
+
+    
+      <link rel="canonical" href="https://kalev-ovo.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">
+    
+
+    
+    
+    <meta property="og:url" content="https://kalev-ovo.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">
+  <meta property="og:site_name" content="Kalev Yang">
+  <meta property="og:title" content="机器学习">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="website">
+
+  <meta itemprop="name" content="机器学习">
+  <meta itemprop="datePublished" content="2025-11-25T00:41:20+00:00">
+  <meta itemprop="dateModified" content="2025-11-25T00:41:20+00:00">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="机器学习">
+
+      
+      
+    
+	
+  </head><body class="ma0 avenir bg-near-white production">
+
+    
+
+  <header>
+    <div class="pb3-m pb6-l bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l center items-center justify-between">
+    <a href="/" class="f3 fw2 hover-white white-90 dib no-underline">
+      
+        Kalev Yang
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      <div class="ananke-socials"></div>
+
+    </div>
+  </div>
+</nav>
+
+      <div class="tc-l pv3 ph3 ph4-ns">
+        <h1 class="f2 f-subheadline-l fw2 light-silver mb0 lh-title">
+          机器学习
+        </h1>
+        
+      </div>
+    </div>
+  </header>
+
+
+    <main class="pb7" role="main">
+      
+  <article class="pa3 pa4-ns nested-copy-line-height">
+    <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy nested-links mid-gray"></section>
+    <section class="flex-ns mt5 flex-wrap justify-around">
+      
+        <div class="w-100 w-30-l mb4 relative bg-white">
+          <div class="w-100 mb4 nested-copy-line-height relative bg-white">
+  <div class="mb3 pa4 gray overflow-hidden bg-white">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5spaceship-titanic%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0/" class="link black dim">
+        神经网络实践：Spaceship Titanic预测模型优化笔记
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      <h2 id="在这篇博客中我将分享在kaggle的spaceship-titanic竞赛中构建预测模型的完整流程重点介绍如何通过余弦退火学习率调度器提升模型性能">在这篇博客中，我将分享在Kaggle的Spaceship Titanic竞赛中构建预测模型的完整流程，重点介绍如何通过余弦退火学习率调度器提升模型性能。</h2>
+<h2 id="竞赛概述">竞赛概述</h2>
+<p>Spaceship Titanic是Kaggle上的一个经典二分类问题，目标是预测乘客是否在宇宙飞船事故中被运输到另一个维度。这是一个典型的结构化数据分类问题，适合初学者入门机器学习。</p>
+<h2 id="模型架构与优化策略">模型架构与优化策略</h2>
+<h3 id="核心模型结构">核心模型结构</h3>
+<p>我构建了一个简单的全连接神经网络作为基础模型：</p>
+<pre tabindex="0"><code>class SpaceshipNN(nn.Module):
+    def __init__(self, input_size):
+        super(SpaceshipNN, self).__init__()
+        self.fc1 = nn.Linear(input_size, 128)
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, 32)
+        self.fc4 = nn.Linear(32, 1)
+        self.dropout = nn.Dropout(0.3)
+        self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
+    
+    def forward(self, x):
+        x = self.relu(self.fc1(x))
+        x = self.dropout(x)
+        x = self.relu(self.fc2(x))
+        x = self.dropout(x)
+        x = self.relu(self.fc3(x))
+        x = self.sigmoid(self.fc4(x))
+        return x
+</code></pre><h3 id="关键优化余弦退火学习率调度">关键优化：余弦退火学习率调度</h3>
+<p>为什么选择余弦退火？
+传统的学习率调度器如ReduceLROnPlateau在验证损失停止改善时降低学习率，但这种方法可能导致训练过早收敛。余弦退火则提供了一种更平滑、周期性的学习率调整方式：</p>
+<h3 id="替换传统的reducelronplateau为cosineannealinglr">替换传统的ReduceLROnPlateau为CosineAnnealingLR</h3>
+<pre tabindex="0"><code>from torch.optim.lr_scheduler import CosineAnnealingLR
+
+# 初始化优化器
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+
+# 初始化余弦退火学习率调度器
+scheduler = CosineAnnealingLR(optimizer, T_max=50, eta_min=1e-6)
+</code></pre><h3 id="实现细节">实现细节：</h3>
+<p>• T_max=50：半个周期的epoch数</p>
+    </div>
+    <a href="/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5spaceship-titanic%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+  </div>
+</div>
+
+        </div>
+      
+    </section>
+    </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white white-70 dn dib-ns pv2 ph3 no-underline" href="https://kalev-ovo.github.io/" >
+    &copy;  Kalev Yang 2026 
+  </a>
+    <div><div class="ananke-socials"></div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

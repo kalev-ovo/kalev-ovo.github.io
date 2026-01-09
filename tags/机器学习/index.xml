@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>机器学习 on Kalev Yang</title>
+    <link>https://kalev-ovo.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</link>
+    <description>Recent content in 机器学习 on Kalev Yang</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 25 Nov 2025 00:41:20 +0000</lastBuildDate>
+    <atom:link href="https://kalev-ovo.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>神经网络实践：Spaceship Titanic预测模型优化笔记</title>
+      <link>https://kalev-ovo.github.io/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5spaceship-titanic%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Tue, 25 Nov 2025 00:41:20 +0000</pubDate>
+      <guid>https://kalev-ovo.github.io/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5spaceship-titanic%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96%E7%AC%94%E8%AE%B0/</guid>
+      <description>&lt;h2 id=&#34;在这篇博客中我将分享在kaggle的spaceship-titanic竞赛中构建预测模型的完整流程重点介绍如何通过余弦退火学习率调度器提升模型性能&#34;&gt;在这篇博客中，我将分享在Kaggle的Spaceship Titanic竞赛中构建预测模型的完整流程，重点介绍如何通过余弦退火学习率调度器提升模型性能。&lt;/h2&gt;&#xA;&lt;h2 id=&#34;竞赛概述&#34;&gt;竞赛概述&lt;/h2&gt;&#xA;&lt;p&gt;Spaceship Titanic是Kaggle上的一个经典二分类问题，目标是预测乘客是否在宇宙飞船事故中被运输到另一个维度。这是一个典型的结构化数据分类问题，适合初学者入门机器学习。&lt;/p&gt;&#xA;&lt;h2 id=&#34;模型架构与优化策略&#34;&gt;模型架构与优化策略&lt;/h2&gt;&#xA;&lt;h3 id=&#34;核心模型结构&#34;&gt;核心模型结构&lt;/h3&gt;&#xA;&lt;p&gt;我构建了一个简单的全连接神经网络作为基础模型：&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;class SpaceshipNN(nn.Module):&#xD;&#xA;    def __init__(self, input_size):&#xD;&#xA;        super(SpaceshipNN, self).__init__()&#xD;&#xA;        self.fc1 = nn.Linear(input_size, 128)&#xD;&#xA;        self.fc2 = nn.Linear(128, 64)&#xD;&#xA;        self.fc3 = nn.Linear(64, 32)&#xD;&#xA;        self.fc4 = nn.Linear(32, 1)&#xD;&#xA;        self.dropout = nn.Dropout(0.3)&#xD;&#xA;        self.relu = nn.ReLU()&#xD;&#xA;        self.sigmoid = nn.Sigmoid()&#xD;&#xA;    &#xD;&#xA;    def forward(self, x):&#xD;&#xA;        x = self.relu(self.fc1(x))&#xD;&#xA;        x = self.dropout(x)&#xD;&#xA;        x = self.relu(self.fc2(x))&#xD;&#xA;        x = self.dropout(x)&#xD;&#xA;        x = self.relu(self.fc3(x))&#xD;&#xA;        x = self.sigmoid(self.fc4(x))&#xD;&#xA;        return x&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;关键优化余弦退火学习率调度&#34;&gt;关键优化：余弦退火学习率调度&lt;/h3&gt;&#xA;&lt;p&gt;为什么选择余弦退火？&#xA;传统的学习率调度器如ReduceLROnPlateau在验证损失停止改善时降低学习率，但这种方法可能导致训练过早收敛。余弦退火则提供了一种更平滑、周期性的学习率调整方式：&lt;/p&gt;&#xA;&lt;h3 id=&#34;替换传统的reducelronplateau为cosineannealinglr&#34;&gt;替换传统的ReduceLROnPlateau为CosineAnnealingLR&lt;/h3&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;from torch.optim.lr_scheduler import CosineAnnealingLR&#xD;&#xA;&#xD;&#xA;# 初始化优化器&#xD;&#xA;optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)&#xD;&#xA;&#xD;&#xA;# 初始化余弦退火学习率调度器&#xD;&#xA;scheduler = CosineAnnealingLR(optimizer, T_max=50, eta_min=1e-6)&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;实现细节&#34;&gt;实现细节：&lt;/h3&gt;&#xA;&lt;p&gt;• T_max=50：半个周期的epoch数&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
