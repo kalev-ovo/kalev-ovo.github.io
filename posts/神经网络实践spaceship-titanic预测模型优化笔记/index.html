@@ -13,7 +13,7 @@
 <meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='神经网络' /><meta property='article:tag' content='预测模型' /><meta property='article:tag' content='机器学习' /><meta property='article:published_time' content='2025-11-25T00:41:20&#43;00:00'/><meta property='article:modified_time' content='2025-11-25T00:41:20&#43;00:00'/>
 <meta name="twitter:title" content="神经网络实践：Spaceship Titanic预测模型优化笔记">
 <meta name="twitter:description" content="在这篇博客中，我将分享在Kaggle的Spaceship Titanic竞赛中构建预测模型的完整流程，重点介绍如何通过余弦退火学习率调度器提升模型性能。\n竞赛概述\rSpaceship Titanic是Kaggle上的一个经典二分类问题，目标是预测乘客是否在宇宙飞船事故中被运输到另一个维度。这是一个典型的结构化数据分类问题，适合初学者入门机器学习。\n模型架构与优化策略\r核心模型结构\r我构建了一个简单的全连接神经网络作为基础模型：\nclass SpaceshipNN(nn.Module): def __init__(self, input_size): super(SpaceshipNN, self).__init__() self.fc1 = nn.Linear(input_size, 128) self.fc2 = nn.Linear(128, 64) self.fc3 = nn.Linear(64, 32) self.fc4 = nn.Linear(32, 1) self.dropout = nn.Dropout(0.3) self.relu = nn.ReLU() self.sigmoid = nn.Sigmoid() def forward(self, x): x = self.relu(self.fc1(x)) x = self.dropout(x) x = self.relu(self.fc2(x)) x = self.dropout(x) x = self.relu(self.fc3(x)) x = self.sigmoid(self.fc4(x)) return x 关键优化：余弦退火学习率调度\r为什么选择余弦退火？ 传统的学习率调度器如ReduceLROnPlateau在验证损失停止改善时降低学习率，但这种方法可能导致训练过早收敛。余弦退火则提供了一种更平滑、周期性的学习率调整方式：\n替换传统的ReduceLROnPlateau为CosineAnnealingLR\rfrom torch.optim.lr_scheduler import CosineAnnealingLR # 初始化优化器 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3) # 初始化余弦退火学习率调度器 scheduler = CosineAnnealingLR(optimizer, T_max=50, eta_min=1e-6) 实现细节：\r• T_max=50：半个周期的epoch数\n">
-    <link rel="shortcut icon" href="/img/favicon.ico" />
+    <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
     <body class="
