@@ -1,4 +1,60 @@
 baseURL = "https://kalev-ovo.github.io/"
 languageCode = "zh-CN"
 title = "Kalev Yang"
-theme = "ananke"
+theme = "hugo-theme-stack"
+hasCJKLanguage = true
+description = "Kalev 的技术博客，记录前端开发、算法与机器学习的学习与实践。"
+
+[params]
+  mainSections = ["posts"]
+  favicon = "favicon.svg"
+
+  [params.sidebar]
+    subtitle = "记录技术成长，分享编程乐趣"
+
+  [params.article.license]
+    enabled = true
+    default = "CC BY-NC-SA 4.0"
+
+[menu]
+  [[menu.main]]
+    identifier = "home"
+    name = "首页"
+    url = "/"
+    weight = 1
+    icon = "home"
+
+  [[menu.main]]
+    identifier = "about"
+    name = "关于"
+    url = "/page/about"
+    weight = 2
+    icon = "user"
+  
+  [[menu.main]]
+    identifier = "archives"
+    name = "归档"
+    url = "/page/archives"
+    weight = 3
+    icon = "archives"
+
+  [[menu.main]]
+    identifier = "search"
+    name = "搜索"
+    url = "/page/search"
+    weight = 4
+    icon = "search"
+
+[params.comments]
+  enabled = true
+  provider = "giscus"
+
+  [params.comments.giscus]
+    repo = "kalev-ovo/kalev-ovo.github.io"
+    repoID = "R_kgDOQ2IR3A"
+    category = "General"
+    categoryID = "DIC_kwDOQ2IR3M4C-Bno"
+    mapping = "pathname"
+    lightTheme = "light"
+    darkTheme = "dark_dimmed"
+    reactions = true
