@@ -1,0 +1,5 @@
+{{- $customSass := resources.Get "scss/custom-flair.scss" -}}
+{{- if $customSass -}}
+  {{- $customStyle := $customSass | toCSS | minify | resources.Fingerprint "sha256" -}}
+  <link rel="stylesheet" href="{{ $customStyle.RelPermalink }}" integrity="{{ $customStyle.Data.Integrity }}">
+{{- end -}}
