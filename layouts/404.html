@@ -1,0 +1,74 @@
+{{ define "main" }}
+<div class="not-found-card" style="text-align:center;padding:40px 20px;">
+  <!-- 二次元 404 插画 -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" style="max-width:220px;margin:0 auto 24px;display:block;">
+    <!-- 背景粉紫渐变 -->
+    <circle cx="100" cy="80" r="75" fill="rgba(228,113,138,0.06)"/>
+    <circle cx="100" cy="80" r="55" fill="rgba(180,130,220,0.08)"/>
+    <!-- 头部 -->
+    <ellipse cx="100" cy="62" rx="28" ry="26" fill="#ffe4d0"/>
+    <!-- 刘海 -->
+    <ellipse cx="100" cy="44" rx="30" ry="20" fill="#2d1b36"/>
+    <ellipse cx="76" cy="56" rx="12" ry="18" fill="#2d1b36"/>
+    <ellipse cx="124" cy="56" rx="12" ry="18" fill="#2d1b36"/>
+    <!-- 眼睛 (X_X 死机表情) -->
+    <text x="86" y="66" font-size="13" fill="#3a1a3a" text-anchor="middle" font-family="monospace">✕</text>
+    <text x="114" y="66" font-size="13" fill="#3a1a3a" text-anchor="middle" font-family="monospace">✕</text>
+    <!-- 腮红 -->
+    <ellipse cx="78" cy="72" rx="6" ry="3" fill="rgba(228,113,138,0.2)"/>
+    <ellipse cx="122" cy="72" rx="6" ry="3" fill="rgba(228,113,138,0.2)"/>
+    <!-- 慌张的嘴 -->
+    <ellipse cx="100" cy="76" rx="5" ry="4" fill="#e8888a"/>
+    <!-- 身体 -->
+    <rect x="82" y="88" width="36" height="30" rx="8" fill="#2d1b36"/>
+    <!-- 小手 -->
+    <circle cx="78" cy="96" r="6" fill="#ffe4d0"/>
+    <circle cx="122" cy="96" r="6" fill="#ffe4d0"/>
+    <!-- 404 文字 -->
+    <text x="100" y="130" text-anchor="middle" font-size="22" font-weight="bold" fill="rgba(180,130,220,0.5)" font-family="monospace">404</text>
+    <!-- 汗滴 -->
+    <text x="64" y="52" font-size="10" fill="#7dd3fc">💧</text>
+    <!-- 装饰 -->
+    <text x="36" y="144" font-size="10" fill="rgba(228,113,138,0.2)">🌸</text>
+    <text x="164" y="36" font-size="10" fill="rgba(180,130,220,0.2)">✨</text>
+  </svg>
+
+  <h1 class="article-title">{{ T "notFound.title" }}</h1>
+  <h2 class="article-subtitle">页面走丢了喵～ 上面那只找了好久也没找到 &gt;_&lt;</h2>
+</div>
+
+{{- $query := first 1 (where .Site.Pages "Layout" "==" "search") -}}
+{{- $searchPage := index $query 0 -}}
+
+{{- with $searchPage -}}
+  <form action="{{ $searchPage.RelPermalink }}" class="search-form widget" {{ with .OutputFormats.Get "json" -}}data-json="{{ .Permalink }}" {{- end }}>
+    <p>
+      <label>{{ T "search.title" }}</label>
+      <input id="searchInput" name="keyword" required placeholder="{{ T `search.placeholder` }}" />
+      <button title="{{ T `search.title` }}">
+        {{ partial "helper/icon" "search" }}
+      </button>
+    </p>
+  </form>
+
+  <div class="search-result">
+    <h3 class="search-result--title section-title"></h3>
+    <div class="search-result--list article-list--compact"></div>
+  </div>
+
+  <script>
+    window.searchResultTitleTemplate = "{{ T `search.resultTitle` }}"
+  </script>
+
+  {{- $opts := dict "minify" hugo.IsProduction "JSXFactory" "createElement" -}}
+  {{- $searchScript := resources.Get "ts/search.tsx" | js.Build $opts -}}
+  <script type="text/javascript" src="{{ $searchScript.RelPermalink }}" defer></script>
+
+  <script>
+    const wrongUrl = new URL(window.location.href);
+    const searchKeyword = decodeURIComponent(wrongUrl.pathname).split(/[/|-]/).join(' ').trim();
+    document.getElementById('searchInput').setAttribute('value', searchKeyword);
+  </script>
+{{- end -}}
+{{ partialCached "footer/footer" . }}
+{{ end }}
