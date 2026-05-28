@@ -179,7 +179,164 @@
 }
 
 
+/* ========== 代码块: macOS 风格标题栏 ========== */
+.highlight {
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+  &::before {
+    content: "";
+    display: block;
+    height: 32px;
+    background: #1e1e1e;
+    border-radius: 10px 10px 0 0;
+    padding: 0 12px;
+    margin: 0;
+    background-image:
+      radial-gradient(circle at 16px 16px, #ff5f57 6px, transparent 7px),
+      radial-gradient(circle at 38px 16px, #febc2e 6px, transparent 7px),
+      radial-gradient(circle at 60px 16px, #28c840 6px, transparent 7px);
+    background-size: auto, auto, auto;
+  }
+}
+pre {
+  margin-top: 0 !important;
+  border-radius: 0 0 10px 10px !important;
+}
+
+/* 代码块内滚动条 */
+pre::-webkit-scrollbar {
+  height: 6px;
+}
+pre::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
+  border-radius: 3px;
+}
+
+/* ========== 引用块美化 ========== */
+.article-content blockquote {
+  border-left: 3px solid transparent;
+  border-image: linear-gradient(to bottom, var(--neon-pink), var(--neon-purple)) 1;
+  background: rgba(228, 113, 138, 0.03);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin: 24px 0;
+  position: relative;
+  &::before {
+    content: '"';
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 2rem;
+    color: rgba(228, 113, 138, 0.2);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+}
+
+/* ========== 表格美化 ========== */
+.article-content table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+.article-content thead th {
+  background: linear-gradient(135deg, rgba(228, 113, 138, 0.15), rgba(180, 130, 220, 0.15));
+  font-weight: 600;
+}
+
+/* ========== 图片渐显 ========== */
+.article-content img {
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+.article-content img:not(.loaded) {
+  opacity: 0;
+  filter: blur(10px);
+}
+
+/* ========== 阅读进度条 ========== */
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple), var(--neon-cyan));
+  z-index: 10000;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ========== 回到顶部按钮 ========== */
+#back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  z-index: 9997;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s, transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 16px rgba(228, 113, 138, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  &:hover {
+    box-shadow: 0 6px 24px rgba(228, 113, 138, 0.5);
+    transform: translateY(-2px);
+  }
+}
+
+/* ========== 点击涟漪 ========== */
+.click-ripple {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  animation: ripple-out 0.6s ease-out forwards;
+}
+@keyframes ripple-out {
+  0% { width: 0; height: 0; opacity: 0.6; }
+  100% { width: 60px; height: 60px; opacity: 0; margin-left: -30px; margin-top: -30px; }
+}
+
+/* 点击爱心 */
+.click-heart {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 1.2rem;
+  animation: heart-float 1s ease-out forwards;
+}
+@keyframes heart-float {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.5); }
+}
+
+/* ========== 暗色模式切换过渡 ========== */
+body {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+.card, .article-preview, .widget, .highlight {
+  transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
 /* ========== 暗色模式代码块调优 ========== */
 [data-scheme="dark"] .highlight {
   border: 1px solid rgba(180, 130, 220, 0.12);
+}
+[data-scheme="dark"] .highlight::before {
+  background: #12121a;
 }

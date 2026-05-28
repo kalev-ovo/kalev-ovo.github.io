@@ -304,6 +304,68 @@ function initTypewriter(): void {
 }
 
 
+// ==================== 点击特效 (涟漪 + 爱心) ====================
+function initClickEffects(): void {
+  document.addEventListener('click', (e: MouseEvent) => {
+    // 涟漪
+    const ripple = document.createElement('div');
+    ripple.className = 'click-ripple';
+    ripple.style.left = e.clientX + 'px';
+    ripple.style.top = e.clientY + 'px';
+    ripple.style.border = '2px solid var(--neon-pink)';
+    document.body.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+
+    // 20% 概率爱心
+    if (Math.random() < 0.2) {
+      const heart = document.createElement('div');
+      heart.className = 'click-heart';
+      heart.style.left = (e.clientX - 6) + 'px';
+      heart.style.top = (e.clientY - 6) + 'px';
+      heart.textContent = ['🌸', '💗', '✨', '🍥'][Math.floor(Math.random() * 4)];
+      document.body.appendChild(heart);
+      heart.addEventListener('animationend', () => heart.remove());
+    }
+  });
+}
+
+
+// ==================== 阅读进度条 ====================
+function initReadingProgress(): void {
+  const bar = document.createElement('div');
+  bar.id = 'reading-progress';
+  document.body.prepend(bar);
+
+  const update = () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    bar.style.width = progress + '%';
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+}
+
+
+// ==================== 回到顶部按钮 ====================
+function initBackToTop(): void {
+  const btn = document.createElement('button');
+  btn.id = 'back-to-top';
+  btn.innerHTML = '↑';
+  btn.title = '回到顶部';
+  document.body.appendChild(btn);
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  const toggle = () => {
+    btn.classList.toggle('visible', window.scrollY > 300);
+  };
+  window.addEventListener('scroll', toggle, { passive: true });
+}
+
+
 // ==================== 启动 ====================
 document.addEventListener('DOMContentLoaded', () => {
   initCanvasEffects();
@@ -311,4 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initCustomCursor();
   initTypewriter();
+  initClickEffects();
+  initReadingProgress();
+  initBackToTop();
 });
