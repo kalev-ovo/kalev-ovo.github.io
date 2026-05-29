@@ -492,7 +492,7 @@ christmas:
 #   icon: 导航图标，Iconify 格式（可选，默认：ri:bilibili-fill）
 # -----------------------------------------------------------------------------
 bangumi:
-  enabled: false
+  userId: YOUR_BGM_USER_ID # 替换为你的 bgm.tv 用户 ID（注册后填写）
   # label: 追番
   # icon: ri:bilibili-fill
 
